@@ -40,7 +40,7 @@
     animation:parpadeo 1.4s ease-in-out infinite; }
   @keyframes parpadeo{ 0%,100%{opacity:1} 50%{opacity:.5} }
 
-  /* ===== APP (sin header: todo el espacio es para el contenido) ===== */
+  /* ===== APP ===== */
   #app{ height:100vh; height:100dvh; display:flex; flex-direction:column;
     max-width:430px; margin:0 auto; opacity:0; transition:opacity .6s ease; }
   #app.visible{ opacity:1; }
@@ -58,14 +58,15 @@
   .placeholder h2{ font-size:19px; font-weight:900; margin-bottom:8px; }
   .placeholder p{ font-size:13px; color:rgba(255,255,255,.6); line-height:1.5; }
 
-  /* ===== LAYOUT PESTAÑA JUEGO ===== */
+  /* ===== LAYOUT JUEGO ===== */
   #p-juego.activa{ display:flex; flex-direction:column; gap:8px;
-    padding:calc(10px + env(safe-area-inset-top,0px)) 12px 12px; }
+    padding:calc(10px + env(safe-area-inset-top,0px)) 0 0; }
 
-  /* Arriba: mini-reproductor (con 3 botones) + cuadro anuncio 30s */
-  .game-top{ flex:0 0 auto; display:flex; gap:8px; }
-  .mini-player{ flex:1.5; display:flex; align-items:center; gap:6px;
-    padding:7px 8px; border-radius:14px;
+  /* SLOT SUPERIOR: aquí vive el reproductor Y aquí mismo aparece el anuncio 30s */
+  .game-top{ flex:0 0 auto; margin:0 10px; position:relative; min-height:52px; }
+
+  .mini-player{ width:100%; display:flex; align-items:center; gap:6px;
+    padding:8px 10px; border-radius:14px;
     background:rgba(255,255,255,.06); border:1px solid var(--borde); }
   .mini-cover{ width:32px; height:32px; border-radius:8px; flex-shrink:0;
     background:linear-gradient(135deg,var(--rosa),var(--morado)); }
@@ -76,19 +77,34 @@
     background:rgba(255,255,255,.12); color:#fff; display:grid; place-items:center;
     font-size:10px; cursor:pointer; }
   .mini-btn:active{ background:rgba(255,255,255,.25); }
-  .ad30-slot{ flex:1; border:1px dashed rgba(255,255,255,.28); border-radius:14px;
-    display:grid; place-items:center; text-align:center; padding:4px;
-    font-size:9px; font-weight:700; letter-spacing:.5px; color:rgba(255,255,255,.4); }
 
-  /* Centro: laberinto (ahora MÁS GRANDE porque no hay header) */
-  .game-area{ flex:1; border:1px dashed rgba(255,255,255,.28); border-radius:18px;
+  /* El anuncio ocupa TODO el slot superior (reemplaza al reproductor) */
+  .ad30-full{ width:100%; display:flex; align-items:center; justify-content:space-between;
+    gap:10px; padding:8px 12px; border-radius:14px;
+    background:linear-gradient(135deg, rgba(255,46,147,.25), rgba(176,77,255,.25));
+    border:1px solid rgba(255,46,147,.5); }
+  .ad30-full[hidden]{ display:none; }
+  .ad30-txt{ font-size:11px; font-weight:800; letter-spacing:.5px; }
+  .ad30-txt small{ display:block; font-size:9px; font-weight:600; color:rgba(255,255,255,.6); }
+  .ad30-count{ font-size:22px; font-weight:900; color:var(--amarillo);
+    text-shadow:0 0 12px rgba(255,210,31,.7); }
+  .ad30-skip{ border:none; background:rgba(255,255,255,.12); color:#fff;
+    font-size:9px; font-weight:700; padding:6px 8px; border-radius:8px; cursor:pointer; }
+
+  /* LABERINTO: toca las orillas de lo ANCHO (pantalla completa horizontal) */
+  .game-area{ flex:1; width:100%;
+    border-top:1px dashed rgba(255,255,255,.28);
+    border-bottom:1px dashed rgba(255,255,255,.28);
+    border-left:none; border-right:none; border-radius:0;
     display:grid; place-items:center; text-align:center;
     color:rgba(255,255,255,.4); font-size:12px; font-weight:800; letter-spacing:1px; }
 
-  /* Abajo: palanca */
-  .game-bottom{ flex:0 0 auto; height:58px; border:1px dashed rgba(255,255,255,.28); border-radius:18px;
-    display:grid; place-items:center;
-    color:rgba(255,255,255,.4); font-size:11px; font-weight:800; letter-spacing:1px; }
+  /* PALANCA: cuadrito pequeño CENTRADO */
+  .game-bottom{ flex:0 0 auto; display:flex; justify-content:center; padding:8px 0 10px; }
+  .joy-slot{ width:120px; height:78px;
+    border:1px dashed rgba(255,255,255,.28); border-radius:18px;
+    display:grid; place-items:center; text-align:center; padding:4px;
+    color:rgba(255,255,255,.4); font-size:9px; font-weight:800; letter-spacing:.5px; }
 
   /* ===== TABBAR 3D ===== */
   nav{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; padding:10px 10px;
@@ -123,7 +139,7 @@
   .tab:nth-child(5).activa .caps{ background:linear-gradient(180deg,#8beeff,var(--cyan));
     box-shadow:0 10px 22px rgba(40,224,255,.45), inset 0 2px 3px rgba(255,255,255,.45), inset 0 -3px 6px rgba(0,0,0,.3); }
 
-  /* ===== BANNER ABAJO DEL TODO ===== */
+  /* ===== BANNER ABAJO ===== */
   .banner-slot{
     height:56px; flex-shrink:0;
     margin:8px 12px calc(8px + env(safe-area-inset-bottom,0px));
@@ -143,20 +159,32 @@
 
   <div id="app">
     <main>
-      <!-- JUEGO -->
       <section class="page activa" id="p-juego">
+
+        <!-- SLOT SUPERIOR: reproductor ↔ anuncio 30s (mismo lugar) -->
         <div class="game-top">
-          <div class="mini-player">
+          <div class="mini-player" id="miniPlayer">
             <div class="mini-cover"></div>
-            <div class="mini-info"><b>Sonando: canción...</b><span>Mini-reproductor</span></div>
+            <div class="mini-info"><b id="songName">Sonando: canción 1</b><span>Mini-reproductor</span></div>
             <button class="mini-btn" aria-label="Anterior">⏮</button>
             <button class="mini-btn" aria-label="Play">▶</button>
-            <button class="mini-btn" aria-label="Siguiente">⏭</button>
+            <button class="mini-btn" id="btnNext" aria-label="Siguiente">⏭</button>
           </div>
-          <div class="ad30-slot">ANUNCIO 30s<br>(al terminar canción)</div>
+
+          <div class="ad30-full" id="ad30Full" hidden>
+            <div class="ad30-txt">ANUNCIO 30s<small>La siguiente canción empieza al terminar</small></div>
+            <div class="ad30-count" id="adCount">30</div>
+            <button class="ad30-skip" id="adSkip">⏩ saltar (demo)</button>
+          </div>
         </div>
-        <div class="game-area">LABERINTO DEL JUEGO<br>(ahora con más espacio)</div>
-        <div class="game-bottom">PALANCA DE CONTROL (4 direcciones)</div>
+
+        <!-- LABERINTO a lo ancho completo -->
+        <div class="game-area">LABERINTO DEL JUEGO<br>(tocando las orillas de lo ancho)</div>
+
+        <!-- PALANCA: cuadrito centrado -->
+        <div class="game-bottom">
+          <div class="joy-slot">PALANCA<br>(4 direcciones)</div>
+        </div>
       </section>
 
       <section class="page" id="p-musica">
@@ -185,6 +213,7 @@
   </div>
 
 <script>
+  // --- Carga ---
   let progreso=0;
   const fill=document.getElementById('fill'), pct=document.getElementById('pct'), txt=document.getElementById('txt');
   const intervalo=setInterval(()=>{
@@ -195,6 +224,7 @@
                        document.getElementById('app').classList.add('visible'); },600); }
   },120);
 
+  // --- Navegación ---
   document.querySelectorAll('.tab').forEach(btn=>{
     btn.addEventListener('click',()=>{
       document.querySelectorAll('.tab').forEach(b=>b.classList.remove('activa'));
@@ -203,6 +233,36 @@
       document.getElementById(btn.dataset.page).classList.add('activa');
     });
   });
+
+  // --- DEMO del flujo: termina canción → anuncio 30s en el lugar del reproductor → siguiente canción ---
+  const miniPlayer=document.getElementById('miniPlayer');
+  const ad30Full=document.getElementById('ad30Full');
+  const adCount=document.getElementById('adCount');
+  const songName=document.getElementById('songName');
+  let adTimer=null, songNum=1;
+
+  document.getElementById('btnNext').addEventListener('click',()=>{
+    // En este prototipo, ⏭ simula "terminó la canción" para que veas el flujo.
+    // En la versión real, el anuncio saldrá solo al terminar la canción.
+    miniPlayer.hidden=true;
+    ad30Full.hidden=false;
+    let s=30; adCount.textContent=s;
+    adTimer=setInterval(()=>{
+      s--; adCount.textContent=s;
+      if(s<=0){ clearInterval(adTimer); finAnuncio(); }
+    },1000);
+  });
+
+  document.getElementById('adSkip').addEventListener('click',()=>{
+    clearInterval(adTimer); finAnuncio();
+  });
+
+  function finAnuncio(){
+    ad30Full.hidden=true;
+    miniPlayer.hidden=false;
+    songNum++;
+    songName.textContent='Sonando: canción '+songNum;
+  }
 </script>
 </body>
-                                                                         </html>
+       </html>
