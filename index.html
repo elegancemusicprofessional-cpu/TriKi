@@ -3,126 +3,153 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Triki - Cargando</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap" rel="stylesheet">
+<title>Triki</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;900&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html,body { height:100%; overflow:hidden; background:#0b0614; font-family:'Inter',sans-serif; }
+  :root{
+    --fondo:#0b0614; --rosa:#ff2e93; --cyan:#28e0ff; --amarillo:#ffd21f;
+    --verde:#3dff7c; --morado:#b04dff; --borde:rgba(255,255,255,.1);
+  }
+  html,body{ height:100%; overflow:hidden; background:var(--fondo); font-family:'Inter',sans-serif; color:#fff; }
 
-  /* ===== PANTALLA DE CARGA ===== */
-  #splash {
+  /* ===== PANTALLA DE CARGA (tu imagen) ===== */
+  #splash{
     position:fixed; inset:0; z-index:100;
-    /* AQUÍ SE USA TU IMAGEN COMO FONDO */
     background-image:url('FondoTriki.png');
-    background-size:cover;
-    background-position:center;
-    background-repeat:no-repeat;
-    display:flex; flex-direction:column; justify-content:flex-end;
-    align-items:center;
+    background-size:cover; background-position:center;
+    display:flex; flex-direction:column; justify-content:flex-end; align-items:center;
     padding:0 24px calc(40px + env(safe-area-inset-bottom,0px));
     transition:opacity .8s ease, visibility .8s ease;
   }
-  #splash.oculto { opacity:0; visibility:hidden; }
+  #splash.oculto{ opacity:0; visibility:hidden; }
+  #splash::before{ content:''; position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(5,3,10,.85), rgba(5,3,10,.3) 25%, transparent 45%); }
+  #pct{ position:relative; font-size:22px; font-weight:900; margin-bottom:10px;
+    text-shadow:0 0 14px rgba(255,46,147,.9), 0 2px 4px rgba(0,0,0,.8); }
+  .barra{ position:relative; width:100%; max-width:340px; height:16px;
+    background:rgba(255,255,255,.14); border:2px solid rgba(255,255,255,.35);
+    border-radius:100px; overflow:hidden; }
+  .barra .fill{ height:100%; width:0%; border-radius:100px;
+    background:linear-gradient(90deg,var(--rosa),var(--amarillo),var(--verde),var(--cyan),var(--morado),var(--rosa));
+    background-size:300% 100%; animation:moverColor 2.2s linear infinite;
+    box-shadow:0 0 16px rgba(255,255,255,.7); transition:width .25s ease; }
+  @keyframes moverColor{ to{ background-position:300% 0; } }
+  #txt{ position:relative; margin-top:12px; font-size:13px; font-weight:700; letter-spacing:2px;
+    color:rgba(255,255,255,.9); text-shadow:0 0 10px rgba(40,224,255,.8);
+    animation:parpadeo 1.4s ease-in-out infinite; }
+  @keyframes parpadeo{ 0%,100%{opacity:1} 50%{opacity:.5} }
 
-  /* sombra suave abajo para que la barra resalte sobre la imagen */
-  #splash::before {
-    content:''; position:absolute; inset:0;
-    background:linear-gradient(to top, rgba(5,3,10,.85) 0%, rgba(5,3,10,.35) 22%, transparent 45%);
-    pointer-events:none;
-  }
+  /* ===== APP (esqueleto) ===== */
+  #app{ height:100vh; height:100dvh; display:flex; flex-direction:column;
+    max-width:430px; margin:0 auto; opacity:0; transition:opacity .6s ease; }
+  #app.visible{ opacity:1; }
 
-  /* ===== PORCENTAJE ===== */
-  #pct {
-    position:relative;
-    font-size:22px; font-weight:900;
-    color:#fff;
-    text-shadow:0 0 14px rgba(255,46,147,.9), 0 2px 4px rgba(0,0,0,.8);
-    margin-bottom:10px;
-    letter-spacing:1px;
-  }
+  header{ display:flex; align-items:center; justify-content:space-between;
+    padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;
+    background:rgba(11,6,20,.7); backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--borde); }
+  .logo-mini{ font-size:22px; font-weight:900; letter-spacing:1px;
+    background:linear-gradient(90deg,var(--rosa),var(--cyan),var(--amarillo),var(--verde),var(--morado));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .coin-pill{ display:flex; align-items:center; gap:6px; padding:7px 13px;
+    background:rgba(255,255,255,.06); border:1px solid var(--borde); border-radius:100px;
+    font-size:13px; font-weight:700; }
+  .coin-dot{ width:15px; height:15px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff3b0, var(--amarillo) 50%, #c98a00);
+    box-shadow:0 0 8px rgba(255,210,31,.7); }
 
-  /* ===== BARRA DE CARGA TRICOLOR ===== */
-  .barra {
-    position:relative;
-    width:100%; max-width:340px; height:16px;
-    background:rgba(255,255,255,.14);
-    border:2px solid rgba(255,255,255,.35);
-    border-radius:100px;
-    overflow:hidden;
-    box-shadow:0 0 20px rgba(0,0,0,.6), inset 0 2px 6px rgba(0,0,0,.4);
-  }
-  .barra .fill {
-    height:100%; width:0%;
-    border-radius:100px;
-    background:linear-gradient(90deg,#ff2e93,#ffd21f,#3dff7c,#28e0ff,#b04dff,#ff2e93);
-    background-size:300% 100%;
-    animation:moverColor 2.2s linear infinite;
-    box-shadow:0 0 16px rgba(255,255,255,.7);
-    transition:width .25s ease;
-  }
-  @keyframes moverColor { to { background-position:300% 0; } }
+  main{ flex:1; position:relative; overflow:hidden; }
+  .page{ position:absolute; inset:0; padding:20px; overflow-y:auto; display:none; }
+  .page.activa{ display:block; }
+  .page::-webkit-scrollbar{ display:none; }
 
-  /* ===== TEXTO CARGANDO ===== */
-  #txt {
-    position:relative;
-    margin-top:12px;
-    font-size:13px; font-weight:700;
-    color:rgba(255,255,255,.9);
-    letter-spacing:2px;
-    text-shadow:0 0 10px rgba(40,224,255,.8), 0 2px 3px rgba(0,0,0,.8);
-    animation:parpadeo 1.4s ease-in-out infinite;
-  }
-  @keyframes parpadeo { 0%,100%{opacity:1} 50%{opacity:.5} }
+  /* placeholder moderno de cada pestaña */
+  .placeholder{ margin-top:30px; padding:40px 24px; text-align:center;
+    background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    border:1px dashed rgba(255,255,255,.25); border-radius:24px; }
+  .placeholder .ico{ font-size:44px; margin-bottom:14px; }
+  .placeholder h2{ font-size:19px; font-weight:900; margin-bottom:8px; }
+  .placeholder p{ font-size:13px; color:rgba(255,255,255,.6); line-height:1.5; }
 
-  /* ===== PANTALLA "APP LISTA" (solo para demostrar el desvanecido) ===== */
-  #app {
-    position:fixed; inset:0;
-    display:grid; place-items:center;
-    background:radial-gradient(circle at 50% 30%, #241436, #0b0614);
-    color:#fff; font-size:20px; font-weight:900; text-align:center;
-    opacity:0; transition:opacity .8s ease;
-  }
-  #app.visible { opacity:1; }
+  /* ===== TABBAR (5 pestañas) ===== */
+  nav{ display:grid; grid-template-columns:repeat(5,1fr); gap:4px;
+    padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));
+    background:rgba(11,6,20,.8); backdrop-filter:blur(20px);
+    border-top:1px solid var(--borde); }
+  .tab{ display:flex; flex-direction:column; align-items:center; gap:4px;
+    padding:8px 0; border:none; background:none; color:rgba(255,255,255,.45);
+    font-size:10px; font-weight:700; cursor:pointer; border-radius:14px; transition:.2s; }
+  .tab svg{ width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:2;
+    stroke-linecap:round; stroke-linejoin:round; }
+  .tab.activa{ color:var(--cyan); background:rgba(40,224,255,.1); }
+  .tab.activa svg{ filter:drop-shadow(0 0 6px var(--cyan)); }
 </style>
 </head>
 <body>
 
-  <!-- Pantalla que aparece al terminar (demo) -->
-  <div id="app">✅ Triki listo<br><small style="font-weight:600;font-size:13px;opacity:.7">(aquí entrará la app real)</small></div>
-
-  <!-- PANTALLA DE CARGA con tu imagen de fondo -->
+  <!-- CARGA -->
   <div id="splash">
     <div id="pct">0%</div>
     <div class="barra"><div class="fill" id="fill"></div></div>
     <div id="txt">CARGANDO TRIKI...</div>
   </div>
 
+  <!-- APP -->
+  <div id="app">
+    <header>
+      <div class="logo-mini">Triki</div>
+      <div class="coin-pill"><span class="coin-dot"></span><span id="saldo">0</span></div>
+    </header>
+
+    <main>
+      <section class="page activa" id="p-juego">
+        <div class="placeholder"><div class="ico">🎮</div><h2>JUEGO</h2><p>Aquí irá el laberinto con joystick, zombies y monedas TC. (Pendiente de tu imagen de referencia)</p></div>
+      </section>
+      <section class="page" id="p-musica">
+        <div class="placeholder"><div class="ico">🎵</div><h2>MÚSICA</h2><p>Aquí irá el reproductor con Jamendo y la lista de canciones. (Pendiente de tu imagen de referencia)</p></div>
+      </section>
+      <section class="page" id="p-tareas">
+        <div class="placeholder"><div class="ico">✅</div><h2>TAREAS</h2><p>Aquí irán recompensas diarias, anuncios y el botón de invitar. (Pendiente de tu imagen de referencia)</p></div>
+      </section>
+      <section class="page" id="p-top">
+        <div class="placeholder"><div class="ico">🏆</div><h2>TOP</h2><p>Aquí irá la tabla de clasificación en tiempo real. (Pendiente de tu imagen de referencia)</p></div>
+      </section>
+      <section class="page" id="p-billetera">
+        <div class="placeholder"><div class="ico">💳</div><h2>BILLETERA</h2><p>Aquí irá tu saldo y la conexión de wallet para retiros. (Pendiente de tu imagen de referencia)</p></div>
+      </section>
+    </main>
+
+    <nav>
+      <button class="tab activa" data-page="p-juego"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4"/><circle cx="16" cy="10" r="1"/><circle cx="18" cy="13" r="1"/></svg>Juego</button>
+      <button class="tab" data-page="p-musica"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Música</button>
+      <button class="tab" data-page="p-tareas"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tareas</button>
+      <button class="tab" data-page="p-top"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"/></svg>Top</button>
+      <button class="tab" data-page="p-billetera"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="3"/><path d="M2 10h20"/><circle cx="17" cy="14" r="1.5"/></svg>Billetera</button>
+    </nav>
+  </div>
+
 <script>
-  // Simula el progreso de carga (0 a 100)
-  let progreso = 0;
-  const fill = document.getElementById('fill');
-  const pct  = document.getElementById('pct');
-  const txt  = document.getElementById('txt');
+  // --- Carga ---
+  let progreso=0;
+  const fill=document.getElementById('fill'), pct=document.getElementById('pct'), txt=document.getElementById('txt');
+  const intervalo=setInterval(()=>{
+    progreso+=Math.random()*7+2; if(progreso>=100)progreso=100;
+    fill.style.width=progreso+'%'; pct.textContent=Math.floor(progreso)+'%';
+    if(progreso===100){ clearInterval(intervalo); txt.textContent='¡LISTO!';
+      setTimeout(()=>{ document.getElementById('splash').classList.add('oculto');
+                       document.getElementById('app').classList.add('visible'); },600); }
+  },120);
 
-  const intervalo = setInterval(() => {
-    // sube de a poco, con saltos irregulares para que se vea real
-    progreso += Math.random() * 7 + 2;
-    if (progreso >= 100) progreso = 100;
-
-    fill.style.width = progreso + '%';
-    pct.textContent  = Math.floor(progreso) + '%';
-
-    if (progreso === 100) {
-      clearInterval(intervalo);
-      txt.textContent = '¡LISTO!';
-      // al terminar, la pantalla se desvanece y entra la app
-      setTimeout(() => {
-        document.getElementById('splash').classList.add('oculto');
-        document.getElementById('app').classList.add('visible');
-      }, 600);
-    }
-  }, 120);
+  // --- Navegación entre pestañas ---
+  document.querySelectorAll('.tab').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(b=>b.classList.remove('activa'));
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('activa'));
+      btn.classList.add('activa');
+      document.getElementById(btn.dataset.page).classList.add('activa');
+    });
+  });
 </script>
-
 </body>
-</html>
+ </html>
