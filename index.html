@@ -55,8 +55,6 @@
   .coin-pill{ display:flex; align-items:center; gap:6px; padding:6px 12px;
     background:rgba(255,255,255,.06); border:1px solid var(--borde); border-radius:100px;
     font-size:13px; font-weight:700; }
-
-  /* MONEDA TC dorada con letra */
   .coin-tc{
     width:19px; height:19px; border-radius:50%;
     background:radial-gradient(circle at 35% 30%, #fff3b0, #ffd21f 45%, #c98a00 90%);
@@ -78,20 +76,38 @@
   .placeholder h2{ font-size:19px; font-weight:900; margin-bottom:8px; }
   .placeholder p{ font-size:13px; color:rgba(255,255,255,.6); line-height:1.5; }
 
-  /* ===== ESPACIO RESERVADO PARA EL BANNER ===== */
-  .banner-slot{
-    height:56px; flex-shrink:0;
-    margin:0 12px 8px;
-    border:1px dashed rgba(255,255,255,.22);
-    border-radius:14px;
+  /* ===== LAYOUT DE LA PESTAÑA JUEGO (reparto de pantalla) ===== */
+  #p-juego.activa{ display:flex; flex-direction:column; gap:10px; padding:12px; }
+
+  /* 20% arriba: mini-reproductor + cuadro anuncio 30s */
+  .game-top{ flex:0 0 auto; display:flex; gap:8px; }
+  .mini-player{ flex:1.4; display:flex; align-items:center; gap:8px;
+    padding:8px 10px; border-radius:14px;
+    background:rgba(255,255,255,.06); border:1px solid var(--borde); }
+  .mini-cover{ width:34px; height:34px; border-radius:8px; flex-shrink:0;
+    background:linear-gradient(135deg,var(--rosa),var(--morado)); }
+  .mini-info{ flex:1; min-width:0; font-size:11px; line-height:1.3; }
+  .mini-info b{ display:block; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .mini-info span{ color:rgba(255,255,255,.5); font-size:10px; }
+  .mini-btn{ width:30px; height:30px; border-radius:50%; border:none; flex-shrink:0;
+    background:rgba(255,255,255,.12); color:#fff; display:grid; place-items:center; font-size:12px; }
+  .ad30-slot{ flex:1; border:1px dashed rgba(255,255,255,.28); border-radius:14px;
+    display:grid; place-items:center; text-align:center; padding:4px;
+    font-size:9px; font-weight:700; letter-spacing:.5px; color:rgba(255,255,255,.4); }
+
+  /* 60% centro: laberinto */
+  .game-area{ flex:1; border:1px dashed rgba(255,255,255,.28); border-radius:18px;
+    display:grid; place-items:center; text-align:center;
+    color:rgba(255,255,255,.4); font-size:12px; font-weight:800; letter-spacing:1px; }
+
+  /* zona de la palanca */
+  .game-bottom{ flex:0 0 auto; height:64px; border:1px dashed rgba(255,255,255,.28); border-radius:18px;
     display:grid; place-items:center;
-    font-size:10px; font-weight:700; letter-spacing:1px;
-    color:rgba(255,255,255,.35);
-  }
+    color:rgba(255,255,255,.4); font-size:11px; font-weight:800; letter-spacing:1px; }
 
   /* ===== TABBAR 3D ===== */
   nav{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px;
-    padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));
+    padding:10px 10px;
     background:rgba(11,6,20,.85); backdrop-filter:blur(20px);
     border-top:1px solid var(--borde); }
   .tab{ display:flex; flex-direction:column; align-items:center; gap:5px;
@@ -123,6 +139,17 @@
     box-shadow:0 10px 22px rgba(255,210,31,.45), inset 0 2px 3px rgba(255,255,255,.45), inset 0 -3px 6px rgba(0,0,0,.3); }
   .tab:nth-child(5).activa .caps{ background:linear-gradient(180deg,#8beeff,var(--cyan));
     box-shadow:0 10px 22px rgba(40,224,255,.45), inset 0 2px 3px rgba(255,255,255,.45), inset 0 -3px 6px rgba(0,0,0,.3); }
+
+  /* ===== BANNER ABAJO DEL TODO ===== */
+  .banner-slot{
+    height:56px; flex-shrink:0;
+    margin:8px 12px calc(8px + env(safe-area-inset-bottom,0px));
+    border:1px dashed rgba(255,255,255,.22);
+    border-radius:14px;
+    display:grid; place-items:center;
+    font-size:10px; font-weight:700; letter-spacing:1px;
+    color:rgba(255,255,255,.35);
+  }
 </style>
 </head>
 <body>
@@ -140,9 +167,20 @@
     </header>
 
     <main>
+      <!-- JUEGO: con reparto de pantalla reservado -->
       <section class="page activa" id="p-juego">
-        <div class="placeholder"><div class="ico">🎮</div><h2>JUEGO</h2><p>Aquí irá el laberinto con joystick, zombies y monedas TC.</p></div>
+        <div class="game-top">
+          <div class="mini-player">
+            <div class="mini-cover"></div>
+            <div class="mini-info"><b>Sonando: canción...</b><span>Mini-reproductor (suena mientras juegas)</span></div>
+            <button class="mini-btn">▶</button>
+          </div>
+          <div class="ad30-slot">ANUNCIO 30s<br>(al terminar canción)</div>
+        </div>
+        <div class="game-area">LABERINTO DEL JUEGO<br>(60% de la pantalla)</div>
+        <div class="game-bottom">PALANCA DE CONTROL (4 direcciones)</div>
       </section>
+
       <section class="page" id="p-musica">
         <div class="placeholder"><div class="ico">🎵</div><h2>MÚSICA</h2><p>Aquí irá el reproductor con Jamendo y la lista de canciones.</p></div>
       </section>
@@ -157,9 +195,6 @@
       </section>
     </main>
 
-    <!-- Espacio reservado para el banner (aquí entrará después) -->
-    <div class="banner-slot">ESPACIO RESERVADO PARA EL BANNER</div>
-
     <nav>
       <button class="tab activa" data-page="p-juego"><span class="caps"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4"/><circle cx="16" cy="10" r="1"/><circle cx="18" cy="13" r="1"/></svg></span>Juego</button>
       <button class="tab" data-page="p-musica"><span class="caps"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>Música</button>
@@ -167,6 +202,9 @@
       <button class="tab" data-page="p-top"><span class="caps"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"/></svg></span>Top</button>
       <button class="tab" data-page="p-billetera"><span class="caps"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="3"/><path d="M2 10h20"/><circle cx="17" cy="14" r="1.5"/></svg></span>Billetera</button>
     </nav>
+
+    <!-- BANNER AHORA ABAJO DEL TODO -->
+    <div class="banner-slot">ESPACIO RESERVADO PARA EL BANNER</div>
   </div>
 
 <script>
@@ -190,4 +228,4 @@
   });
 </script>
 </body>
-                                                                                                                               </html>
+ </html>
