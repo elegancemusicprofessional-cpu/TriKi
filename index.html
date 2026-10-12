@@ -4,288 +4,125 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Triki - Cargando</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Inter:wght@600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; overflow:hidden; background:#0b0614; font-family:'Inter',sans-serif; }
 
-  :root{
-    --rosa:#ff2e93;
-    --cyan:#28e0ff;
-    --amarillo:#ffd21f;
-    --verde:#3dff7c;
-    --morado:#b04dff;
-    --fondo:#0b0614;
+  /* ===== PANTALLA DE CARGA ===== */
+  #splash {
+    position:fixed; inset:0; z-index:100;
+    /* AQUÍ SE USA TU IMAGEN COMO FONDO */
+    background-image:url('FondoTriki.png');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    align-items:center;
+    padding:0 24px calc(40px + env(safe-area-inset-bottom,0px));
+    transition:opacity .8s ease, visibility .8s ease;
+  }
+  #splash.oculto { opacity:0; visibility:hidden; }
+
+  /* sombra suave abajo para que la barra resalte sobre la imagen */
+  #splash::before {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(5,3,10,.85) 0%, rgba(5,3,10,.35) 22%, transparent 45%);
+    pointer-events:none;
   }
 
-  html,body{ height:100%; overflow:hidden; background:var(--fondo); font-family:'Inter',sans-serif; }
-
-  .load-screen{
+  /* ===== PORCENTAJE ===== */
+  #pct {
     position:relative;
-    height:100vh; height:100dvh;
-    max-width:430px; margin:0 auto;
-    overflow:hidden;
-    background:
-      radial-gradient(ellipse 90% 50% at 50% 0%, rgba(176,77,255,.25), transparent 60%),
-      radial-gradient(ellipse 70% 40% at 10% 80%, rgba(255,46,147,.18), transparent 60%),
-      radial-gradient(ellipse 70% 40% at 90% 75%, rgba(40,224,255,.15), transparent 60%),
-      var(--fondo);
+    font-size:22px; font-weight:900;
+    color:#fff;
+    text-shadow:0 0 14px rgba(255,46,147,.9), 0 2px 4px rgba(0,0,0,.8);
+    margin-bottom:10px;
+    letter-spacing:1px;
   }
 
-  /* ===== NEONES DE FONDO ===== */
-  .neon-line{ position:absolute; border-radius:100px; filter:blur(1px); opacity:.8; }
-  .nl1{ width:140px; height:4px; background:var(--rosa); box-shadow:0 0 14px var(--rosa); top:18%; left:-30px; transform:rotate(-20deg); }
-  .nl2{ width:120px; height:4px; background:var(--cyan); box-shadow:0 0 14px var(--cyan); top:26%; right:-25px; transform:rotate(18deg); }
-  .nl3{ width:90px; height:4px; background:var(--morado); box-shadow:0 0 14px var(--morado); top:55%; left:-20px; transform:rotate(24deg); }
-  .nl4{ width:110px; height:4px; background:var(--verde); box-shadow:0 0 12px var(--verde); top:62%; right:-20px; transform:rotate(-16deg); }
-
-  .star{ position:absolute; width:3px; height:3px; background:#fff; border-radius:50%; opacity:.6; }
-
-  /* ===== MÁQUINAS ARCADE (fondos laterales) ===== */
-  .arcade{
-    position:absolute; bottom:12%;
-    width:86px; height:150px;
-    background:linear-gradient(180deg,#241436,#160b22);
-    border:2px solid rgba(255,255,255,.12);
-    border-radius:10px 10px 6px 6px;
-    box-shadow:0 0 24px rgba(176,77,255,.35), inset 0 0 12px rgba(0,0,0,.6);
-  }
-  .arcade::before{ /* pantalla encendida */
-    content:''; position:absolute; top:14px; left:10px; right:10px; height:52px;
-    background:linear-gradient(135deg,var(--cyan),var(--morado));
-    border-radius:6px;
-    box-shadow:0 0 18px rgba(40,224,255,.7), inset 0 0 10px rgba(255,255,255,.4);
-    animation:screenFlicker 2.4s infinite;
-  }
-  .arcade::after{ /* panel de botones */
-    content:''; position:absolute; bottom:22px; left:12px; right:12px; height:26px;
-    background:
-      radial-gradient(circle at 20% 50%, var(--rosa) 4px, transparent 5px),
-      radial-gradient(circle at 50% 50%, var(--amarillo) 4px, transparent 5px),
-      radial-gradient(circle at 80% 50%, var(--verde) 4px, transparent 5px),
-      #1b0f2a;
-    border-radius:6px;
-  }
-  .arcade.left{ left:-18px; transform:rotate(8deg); }
-  .arcade.right{ right:-18px; transform:rotate(-8deg); }
-  .arcade.right::before{ background:linear-gradient(135deg,var(--rosa),var(--amarillo)); }
-
-  @keyframes screenFlicker{ 0%,100%{opacity:1} 50%{opacity:.75} }
-
-  /* ===== LOGO TRIKI (graffiti, cada letra un color) ===== */
-  .logo{
-    position:absolute; top:9%; left:0; right:0;
-    text-align:center;
-    font-family:'Luckiest Guy',cursive;
-    font-size:64px;
-    letter-spacing:2px;
-    animation:logoGlow 2.6s ease-in-out infinite;
-  }
-  .logo span{
-    display:inline-block;
-    -webkit-text-stroke:3px #12081d;
-    text-shadow:0 4px 0 #12081d, 0 0 22px currentColor;
-  }
-  .logo span:nth-child(1){ color:var(--rosa);    transform:rotate(-6deg); }
-  .logo span:nth-child(2){ color:var(--cyan);    transform:rotate(4deg) translateY(-3px); }
-  .logo span:nth-child(3){ color:var(--amarillo);transform:rotate(-3deg); }
-  .logo span:nth-child(4){ color:var(--verde);   transform:rotate(5deg) translateY(-2px); }
-  .logo span:nth-child(5){ color:var(--morado);  transform:rotate(-5deg); }
-
-  @keyframes logoGlow{ 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.25)} }
-
-  /* ===== ESCENA CENTRAL ===== */
-  .scene{ position:absolute; inset:0; }
-
-  .hero{
-    position:absolute; left:50%; top:38%;
-    transform:translateX(-50%);
-    width:170px;
-    animation:floatY 3s ease-in-out infinite;
-    filter:drop-shadow(0 14px 26px rgba(40,224,255,.45));
-  }
-
-  .zombie{ position:absolute; width:84px; animation:floatY 3.4s ease-in-out infinite; }
-  .z1{ left:6%;  top:52%; animation-delay:.3s; filter:drop-shadow(0 10px 16px rgba(61,255,124,.4)); }
-  .z2{ right:6%; top:50%; animation-delay:.8s; filter:drop-shadow(0 10px 16px rgba(176,77,255,.4)); }
-  .z3{ left:50%; top:66%; transform:translateX(-50%); width:74px; animation-delay:.5s; filter:drop-shadow(0 10px 16px rgba(40,224,255,.4)); }
-
-  @keyframes floatY{ 0%,100%{translate:0 0} 50%{translate:0 -10px} }
-
-  /* ===== MONEDAS TC EN EL SUELO ===== */
-  .coin{
-    position:absolute;
-    border-radius:50%;
-    background:radial-gradient(circle at 35% 30%, #fff3b0, #ffd21f 45%, #c98a00 90%);
-    box-shadow:0 0 12px rgba(255,210,31,.75), inset 0 -3px 6px rgba(0,0,0,.3);
-    display:grid; place-items:center;
-    font-weight:800; color:#7a5200;
-    animation:coinShine 1.8s ease-in-out infinite;
-  }
-  @keyframes coinShine{ 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.3)} }
-
-  /* perspectiva: más chicas arriba, más grandes abajo */
-  .c1{ width:16px;height:16px;font-size:7px;  left:46%; top:74%; }
-  .c2{ width:16px;height:16px;font-size:7px;  left:54%; top:76%; animation-delay:.2s;}
-  .c3{ width:20px;height:20px;font-size:8px;  left:40%; top:79%; animation-delay:.4s;}
-  .c4{ width:20px;height:20px;font-size:8px;  left:58%; top:81%; animation-delay:.1s;}
-  .c5{ width:26px;height:26px;font-size:10px; left:32%; top:84%; animation-delay:.6s;}
-  .c6{ width:26px;height:26px;font-size:10px; left:64%; top:85%; animation-delay:.3s;}
-  .c7{ width:32px;height:32px;font-size:12px; left:24%; top:89%; animation-delay:.5s;}
-  .c8{ width:32px;height:32px;font-size:12px; left:70%; top:90%; animation-delay:.7s;}
-  .c9{ width:38px;height:38px;font-size:14px; left:44%; top:92%; animation-delay:.2s;}
-
-  /* ===== BARRA DE CARGA ===== */
-  .loadbar-wrap{
-    position:absolute; bottom:6%; left:50%; transform:translateX(-50%);
-    width:70%; text-align:center;
-  }
-  .loadbar{
-    width:100%; height:10px;
-    background:rgba(255,255,255,.1);
-    border:1px solid rgba(255,255,255,.15);
-    border-radius:100px; overflow:hidden;
-  }
-  .loadbar .fill{
-    height:100%; width:0%;
-    background:linear-gradient(90deg,var(--rosa),var(--amarillo),var(--verde),var(--cyan),var(--morado));
+  /* ===== BARRA DE CARGA TRICOLOR ===== */
+  .barra {
+    position:relative;
+    width:100%; max-width:340px; height:16px;
+    background:rgba(255,255,255,.14);
+    border:2px solid rgba(255,255,255,.35);
     border-radius:100px;
-    box-shadow:0 0 14px rgba(255,255,255,.5);
-    animation:loadFill 3s ease forwards;
+    overflow:hidden;
+    box-shadow:0 0 20px rgba(0,0,0,.6), inset 0 2px 6px rgba(0,0,0,.4);
   }
-  @keyframes loadFill{ 0%{width:0} 60%{width:70%} 100%{width:100%} }
+  .barra .fill {
+    height:100%; width:0%;
+    border-radius:100px;
+    background:linear-gradient(90deg,#ff2e93,#ffd21f,#3dff7c,#28e0ff,#b04dff,#ff2e93);
+    background-size:300% 100%;
+    animation:moverColor 2.2s linear infinite;
+    box-shadow:0 0 16px rgba(255,255,255,.7);
+    transition:width .25s ease;
+  }
+  @keyframes moverColor { to { background-position:300% 0; } }
 
-  .loadtext{
-    margin-top:8px; font-size:12px; font-weight:600;
-    color:rgba(255,255,255,.65); letter-spacing:1px;
+  /* ===== TEXTO CARGANDO ===== */
+  #txt {
+    position:relative;
+    margin-top:12px;
+    font-size:13px; font-weight:700;
+    color:rgba(255,255,255,.9);
+    letter-spacing:2px;
+    text-shadow:0 0 10px rgba(40,224,255,.8), 0 2px 3px rgba(0,0,0,.8);
+    animation:parpadeo 1.4s ease-in-out infinite;
   }
+  @keyframes parpadeo { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+  /* ===== PANTALLA "APP LISTA" (solo para demostrar el desvanecido) ===== */
+  #app {
+    position:fixed; inset:0;
+    display:grid; place-items:center;
+    background:radial-gradient(circle at 50% 30%, #241436, #0b0614);
+    color:#fff; font-size:20px; font-weight:900; text-align:center;
+    opacity:0; transition:opacity .8s ease;
+  }
+  #app.visible { opacity:1; }
 </style>
 </head>
 <body>
 
-<div class="load-screen">
+  <!-- Pantalla que aparece al terminar (demo) -->
+  <div id="app">✅ Triki listo<br><small style="font-weight:600;font-size:13px;opacity:.7">(aquí entrará la app real)</small></div>
 
-  <!-- neones y estrellas de fondo -->
-  <div class="neon-line nl1"></div>
-  <div class="neon-line nl2"></div>
-  <div class="neon-line nl3"></div>
-  <div class="neon-line nl4"></div>
-  <div class="star" style="top:12%;left:20%"></div>
-  <div class="star" style="top:8%;left:70%"></div>
-  <div class="star" style="top:30%;left:85%"></div>
-  <div class="star" style="top:44%;left:10%"></div>
-  <div class="star" style="top:22%;left:45%"></div>
-
-  <!-- máquinas arcade a los lados -->
-  <div class="arcade left"></div>
-  <div class="arcade right"></div>
-
-  <!-- LOGO TRIKI graffiti multicolor -->
-  <div class="logo">
-    <span>T</span><span>r</span><span>i</span><span>k</span><span>i</span>
+  <!-- PANTALLA DE CARGA con tu imagen de fondo -->
+  <div id="splash">
+    <div id="pct">0%</div>
+    <div class="barra"><div class="fill" id="fill"></div></div>
+    <div id="txt">CARGANDO TRIKI...</div>
   </div>
 
-  <!-- ESCENA: personaje + zombies -->
-  <div class="scene">
+<script>
+  // Simula el progreso de carga (0 a 100)
+  let progreso = 0;
+  const fill = document.getElementById('fill');
+  const pct  = document.getElementById('pct');
+  const txt  = document.getElementById('txt');
 
-    <!-- Personaje principal: burbuja celeste, zapatos rojos, carita feliz -->
-    <svg class="hero" viewBox="0 0 200 230">
-      <defs>
-        <radialGradient id="burb" cx="35%" cy="30%">
-          <stop offset="0%"  stop-color="#d8fbff"/>
-          <stop offset="45%" stop-color="#59e6ff"/>
-          <stop offset="100%" stop-color="#0aa9d6"/>
-        </radialGradient>
-      </defs>
-      <!-- zapatitos rojos -->
-      <ellipse cx="72"  cy="208" rx="24" ry="13" fill="#e8332a"/>
-      <ellipse cx="128" cy="208" rx="24" ry="13" fill="#e8332a"/>
-      <ellipse cx="72"  cy="204" rx="24" ry="10" fill="#ff5a4e"/>
-      <ellipse cx="128" cy="204" rx="24" ry="10" fill="#ff5a4e"/>
-      <!-- cuerpo burbuja -->
-      <circle cx="100" cy="112" r="82" fill="url(#burb)"/>
-      <!-- brillo -->
-      <ellipse cx="68" cy="72" rx="24" ry="15" fill="rgba(255,255,255,.6)"/>
-      <!-- ojos -->
-      <circle cx="76"  cy="102" r="15" fill="#fff"/>
-      <circle cx="124" cy="102" r="15" fill="#fff"/>
-      <circle cx="79"  cy="105" r="7"  fill="#1b1b1b"/>
-      <circle cx="121" cy="105" r="7"  fill="#1b1b1b"/>
-      <!-- sonrisa feliz -->
-      <path d="M72 138 Q100 162 128 138" stroke="#1b1b1b" stroke-width="7" fill="none" stroke-linecap="round"/>
-      <!-- mejillas -->
-      <circle cx="58"  cy="126" r="8" fill="rgba(255,120,160,.5)"/>
-      <circle cx="142" cy="126" r="8" fill="rgba(255,120,160,.5)"/>
-    </svg>
+  const intervalo = setInterval(() => {
+    // sube de a poco, con saltos irregulares para que se vea real
+    progreso += Math.random() * 7 + 2;
+    if (progreso >= 100) progreso = 100;
 
-    <!-- Zombie 1: le falta un pedazo de cerebro (muesca en la cabeza) -->
-    <svg class="zombie z1" viewBox="0 0 100 120">
-      <!-- cuerpo -->
-      <rect x="26" y="52" width="48" height="46" rx="20" fill="#3dff7c"/>
-      <!-- cabeza con muesca (falta pedazo) -->
-      <path d="M30 34 a22 22 0 0 1 40 -8 l-6 10 l8 4 a22 22 0 0 1 -42 6 z" fill="#54ff8d"/>
-      <!-- hueco del cerebro -->
-      <path d="M52 12 q10 -6 14 4 q-8 2 -14 -4z" fill="#0b0614"/>
-      <!-- ojos -->
-      <circle cx="42" cy="34" r="7" fill="#fff"/><circle cx="44" cy="35" r="3" fill="#1b1b1b"/>
-      <circle cx="60" cy="32" r="7" fill="#fff"/><circle cx="62" cy="33" r="3" fill="#1b1b1b"/>
-      <!-- brazos -->
-      <rect x="12" y="58" width="16" height="10" rx="5" fill="#3dff7c"/>
-      <rect x="72" y="58" width="16" height="10" rx="5" fill="#3dff7c"/>
-      <!-- piernas -->
-      <rect x="34" y="94" width="12" height="16" rx="6" fill="#2bd465"/>
-      <rect x="54" y="94" width="12" height="16" rx="6" fill="#2bd465"/>
-    </svg>
+    fill.style.width = progreso + '%';
+    pct.textContent  = Math.floor(progreso) + '%';
 
-    <!-- Zombie 2: le falta una mano (solo un brazo) -->
-    <svg class="zombie z2" viewBox="0 0 100 120">
-      <rect x="26" y="52" width="48" height="46" rx="20" fill="#b04dff"/>
-      <circle cx="50" cy="32" r="24" fill="#c46bff"/>
-      <!-- ojos -->
-      <circle cx="42" cy="32" r="7" fill="#fff"/><circle cx="44" cy="33" r="3" fill="#1b1b1b"/>
-      <circle cx="60" cy="32" r="7" fill="#fff"/><circle cx="62" cy="33" r="3" fill="#1b1b1b"/>
-      <!-- solo UN brazo (el otro falta) -->
-      <rect x="12" y="58" width="16" height="10" rx="5" fill="#b04dff"/>
-      <!-- piernas -->
-      <rect x="34" y="94" width="12" height="16" rx="6" fill="#9330e0"/>
-      <rect x="54" y="94" width="12" height="16" rx="6" fill="#9330e0"/>
-    </svg>
-
-    <!-- Zombie 3: le falta un pie (solo una pierna) -->
-    <svg class="zombie z3" viewBox="0 0 100 120">
-      <rect x="26" y="52" width="48" height="46" rx="20" fill="#28e0ff"/>
-      <circle cx="50" cy="32" r="24" fill="#54e8ff"/>
-      <!-- ojos -->
-      <circle cx="42" cy="32" r="7" fill="#fff"/><circle cx="44" cy="33" r="3" fill="#1b1b1b"/>
-      <circle cx="60" cy="32" r="7" fill="#fff"/><circle cx="62" cy="33" r="3" fill="#1b1b1b"/>
-      <!-- brazos -->
-      <rect x="12" y="58" width="16" height="10" rx="5" fill="#28e0ff"/>
-      <rect x="72" y="58" width="16" height="10" rx="5" fill="#28e0ff"/>
-      <!-- solo UNA pierna (la otra falta) -->
-      <rect x="44" y="94" width="12" height="18" rx="6" fill="#12b8d6"/>
-    </svg>
-
-    <!-- Monedas TC en el suelo (perspectiva) -->
-    <div class="coin c1">TC</div>
-    <div class="coin c2">TC</div>
-    <div class="coin c3">TC</div>
-    <div class="coin c4">TC</div>
-    <div class="coin c5">TC</div>
-    <div class="coin c6">TC</div>
-    <div class="coin c7">TC</div>
-    <div class="coin c8">TC</div>
-    <div class="coin c9">TC</div>
-
-  </div>
-
-  <!-- BARRA DE CARGA -->
-  <div class="loadbar-wrap">
-    <div class="loadbar"><div class="fill"></div></div>
-    <div class="loadtext">Cargando Triki...</div>
-  </div>
-
-</div>
+    if (progreso === 100) {
+      clearInterval(intervalo);
+      txt.textContent = '¡LISTO!';
+      // al terminar, la pantalla se desvanece y entra la app
+      setTimeout(() => {
+        document.getElementById('splash').classList.add('oculto');
+        document.getElementById('app').classList.add('visible');
+      }, 600);
+    }
+  }, 120);
+</script>
 
 </body>
-    </html>
+</html>
