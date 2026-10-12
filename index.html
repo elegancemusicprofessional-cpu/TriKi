@@ -13,7 +13,7 @@
   }
   html,body{ height:100%; overflow:hidden; background:var(--fondo); font-family:'Inter',sans-serif; color:#fff; }
 
-  /* ===== PANTALLA DE CARGA (tu imagen) ===== */
+  /* ===== PANTALLA DE CARGA ===== */
   #splash{
     position:fixed; inset:0; z-index:100;
     background-image:url('FondoTriki.png');
@@ -40,7 +40,7 @@
     animation:parpadeo 1.4s ease-in-out infinite; }
   @keyframes parpadeo{ 0%,100%{opacity:1} 50%{opacity:.5} }
 
-  /* ===== APP (esqueleto) ===== */
+  /* ===== APP ===== */
   #app{ height:100vh; height:100dvh; display:flex; flex-direction:column;
     max-width:430px; margin:0 auto; opacity:0; transition:opacity .6s ease; }
   #app.visible{ opacity:1; }
@@ -64,7 +64,6 @@
   .page.activa{ display:block; }
   .page::-webkit-scrollbar{ display:none; }
 
-  /* placeholder moderno de cada pestaña */
   .placeholder{ margin-top:30px; padding:40px 24px; text-align:center;
     background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
     border:1px dashed rgba(255,255,255,.25); border-radius:24px; }
@@ -72,30 +71,61 @@
   .placeholder h2{ font-size:19px; font-weight:900; margin-bottom:8px; }
   .placeholder p{ font-size:13px; color:rgba(255,255,255,.6); line-height:1.5; }
 
-  /* ===== TABBAR (5 pestañas) ===== */
-  nav{ display:grid; grid-template-columns:repeat(5,1fr); gap:4px;
-    padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));
-    background:rgba(11,6,20,.8); backdrop-filter:blur(20px);
+  /* ===== TABBAR 3D ===== */
+  nav{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px;
+    padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));
+    background:rgba(11,6,20,.85); backdrop-filter:blur(20px);
     border-top:1px solid var(--borde); }
-  .tab{ display:flex; flex-direction:column; align-items:center; gap:4px;
-    padding:8px 0; border:none; background:none; color:rgba(255,255,255,.45);
-    font-size:10px; font-weight:700; cursor:pointer; border-radius:14px; transition:.2s; }
-  .tab svg{ width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:2;
-    stroke-linecap:round; stroke-linejoin:round; }
-  .tab.activa{ color:var(--cyan); background:rgba(40,224,255,.1); }
-  .tab.activa svg{ filter:drop-shadow(0 0 6px var(--cyan)); }
+
+  .tab{ display:flex; flex-direction:column; align-items:center; gap:5px;
+    padding:4px 0; border:none; background:none; cursor:pointer;
+    color:rgba(255,255,255,.45); font-size:10px; font-weight:700; }
+
+  /* la "cápsula" 3D que envuelve el icono */
+  .tab .caps{
+    width:52px; height:36px; border-radius:16px;
+    display:grid; place-items:center;
+    background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.03));
+    border:1px solid rgba(255,255,255,.16);
+    box-shadow:
+      0 6px 14px rgba(0,0,0,.55),
+      inset 0 2px 3px rgba(255,255,255,.25),
+      inset 0 -3px 6px rgba(0,0,0,.45);
+    transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .tab svg{ width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2.2;
+    stroke-linecap:round; stroke-linejoin:round;
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,.6)); transition:.2s; }
+
+  /* al presionar: se hunde */
+  .tab:active .caps{ transform:translateY(2px);
+    box-shadow:0 2px 6px rgba(0,0,0,.5), inset 0 2px 4px rgba(0,0,0,.4); }
+
+  /* activo: se eleva y se enciende con su color */
+  .tab.activa{ color:#fff; }
+  .tab.activa .caps{ transform:translateY(-4px); }
+  .tab.activa svg{ stroke:#fff; filter:drop-shadow(0 0 7px rgba(255,255,255,.9)); }
+
+  .tab:nth-child(1).activa .caps{ background:linear-gradient(180deg,#d07bff,var(--morado));
+    box-shadow:0 10px 22px rgba(176,77,255,.5), inset 0 2px 3px rgba(255,255,255,.45), inset 0 -3px 6px rgba(0,0,0,.3); }
+  .tab:nth-child(2).activa .caps{ background:linear-gradient(180deg,#ff7ab8,var(--rosa));
+    box-shadow:0 10px 22px rgba(255,46,147,.5), inset 0 2px 3px rgba(255,255,255,.45), inset 0 -3px 6px rgba(0,0,0,.3); }
+  .tab:nth-child(3).activa .caps{ background:linear-gradient(180deg,#8bffab,var(--verde));
+    box-shadow:0 10px 22px rgba(61,255,124,.45), inset 0 2px 3px rgba(255,255,255,.45), inset 0 -3px 6px rgba(0,0,0,.3); }
+  .tab:nth-child(4).activa .caps{ background:linear-gradient(180deg,#ffe37a,var(--amarillo));
+    box-shadow:0 10px 22px rgba(255,210,31,.45), inset 0 2px 3px rgba(255,255,255,.45), inset 0 -3px 6px rgba(0,0,0,.3); }
+  .tab:nth-child(5).activa .caps{ background:linear-gradient(180deg,#8beeff,var(--cyan));
+    box-shadow:0 10px 22px rgba(40,224,255,.45), inset 0 2px 3px rgba(255,255,255,.45), inset 0 -3px 6px rgba(0,0,0,.3); }
 </style>
 </head>
 <body>
 
-  <!-- CARGA -->
   <div id="splash">
     <div id="pct">0%</div>
     <div class="barra"><div class="fill" id="fill"></div></div>
     <div id="txt">CARGANDO TRIKI...</div>
   </div>
 
-  <!-- APP -->
   <div id="app">
     <header>
       <div class="logo-mini">Triki</div>
@@ -104,33 +134,32 @@
 
     <main>
       <section class="page activa" id="p-juego">
-        <div class="placeholder"><div class="ico">🎮</div><h2>JUEGO</h2><p>Aquí irá el laberinto con joystick, zombies y monedas TC. (Pendiente de tu imagen de referencia)</p></div>
+        <div class="placeholder"><div class="ico">🎮</div><h2>JUEGO</h2><p>Aquí irá el laberinto con joystick, zombies y monedas TC.</p></div>
       </section>
       <section class="page" id="p-musica">
-        <div class="placeholder"><div class="ico">🎵</div><h2>MÚSICA</h2><p>Aquí irá el reproductor con Jamendo y la lista de canciones. (Pendiente de tu imagen de referencia)</p></div>
+        <div class="placeholder"><div class="ico">🎵</div><h2>MÚSICA</h2><p>Aquí irá el reproductor con Jamendo y la lista de canciones.</p></div>
       </section>
       <section class="page" id="p-tareas">
-        <div class="placeholder"><div class="ico">✅</div><h2>TAREAS</h2><p>Aquí irán recompensas diarias, anuncios y el botón de invitar. (Pendiente de tu imagen de referencia)</p></div>
+        <div class="placeholder"><div class="ico">✅</div><h2>TAREAS</h2><p>Aquí irán recompensas diarias, anuncios y el botón de invitar.</p></div>
       </section>
       <section class="page" id="p-top">
-        <div class="placeholder"><div class="ico">🏆</div><h2>TOP</h2><p>Aquí irá la tabla de clasificación en tiempo real. (Pendiente de tu imagen de referencia)</p></div>
+        <div class="placeholder"><div class="ico">🏆</div><h2>TOP</h2><p>Aquí irá la tabla de clasificación en tiempo real.</p></div>
       </section>
       <section class="page" id="p-billetera">
-        <div class="placeholder"><div class="ico">💳</div><h2>BILLETERA</h2><p>Aquí irá tu saldo y la conexión de wallet para retiros. (Pendiente de tu imagen de referencia)</p></div>
+        <div class="placeholder"><div class="ico">💳</div><h2>BILLETERA</h2><p>Aquí irá tu saldo y la conexión de wallet para retiros.</p></div>
       </section>
     </main>
 
     <nav>
-      <button class="tab activa" data-page="p-juego"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4"/><circle cx="16" cy="10" r="1"/><circle cx="18" cy="13" r="1"/></svg>Juego</button>
-      <button class="tab" data-page="p-musica"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Música</button>
-      <button class="tab" data-page="p-tareas"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tareas</button>
-      <button class="tab" data-page="p-top"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"/></svg>Top</button>
-      <button class="tab" data-page="p-billetera"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="3"/><path d="M2 10h20"/><circle cx="17" cy="14" r="1.5"/></svg>Billetera</button>
+      <button class="tab activa" data-page="p-juego"><span class="caps"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4"/><circle cx="16" cy="10" r="1"/><circle cx="18" cy="13" r="1"/></svg></span>Juego</button>
+      <button class="tab" data-page="p-musica"><span class="caps"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>Música</button>
+      <button class="tab" data-page="p-tareas"><span class="caps"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>Tareas</button>
+      <button class="tab" data-page="p-top"><span class="caps"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"/></svg></span>Top</button>
+      <button class="tab" data-page="p-billetera"><span class="caps"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="3"/><path d="M2 10h20"/><circle cx="17" cy="14" r="1.5"/></svg></span>Billetera</button>
     </nav>
   </div>
 
 <script>
-  // --- Carga ---
   let progreso=0;
   const fill=document.getElementById('fill'), pct=document.getElementById('pct'), txt=document.getElementById('txt');
   const intervalo=setInterval(()=>{
@@ -141,7 +170,6 @@
                        document.getElementById('app').classList.add('visible'); },600); }
   },120);
 
-  // --- Navegación entre pestañas ---
   document.querySelectorAll('.tab').forEach(btn=>{
     btn.addEventListener('click',()=>{
       document.querySelectorAll('.tab').forEach(b=>b.classList.remove('activa'));
@@ -152,4 +180,4 @@
   });
 </script>
 </body>
- </html>
+</html>
