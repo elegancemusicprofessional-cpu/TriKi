@@ -1,696 +1,291 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#050308">
-    <title>Triki HUB</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Triki - Cargando</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Inter:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-    <!-- Telegram Mini App SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- AdsGram SDK Oficial -->
-    <script src="https://cdn.adsgram.ai/sdk/adsgram.js" defer></script>
+  :root{
+    --rosa:#ff2e93;
+    --cyan:#28e0ff;
+    --amarillo:#ffd21f;
+    --verde:#3dff7c;
+    --morado:#b04dff;
+    --fondo:#0b0614;
+  }
 
-    <!-- 
-      IMPORTANTE MONETAG:
-      Debes pegar aquí el <script src="..."> oficial que te da Monetag en tu panel 
-      para que la función show_11992190() funcione correctamente.
-    -->
-    <!-- <script src="TU_SCRIPT_DE_MONETAG_AQUI.js" defer></script> -->
+  html,body{ height:100%; overflow:hidden; background:var(--fondo); font-family:'Inter',sans-serif; }
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+  .load-screen{
+    position:relative;
+    height:100vh; height:100dvh;
+    max-width:430px; margin:0 auto;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 90% 50% at 50% 0%, rgba(176,77,255,.25), transparent 60%),
+      radial-gradient(ellipse 70% 40% at 10% 80%, rgba(255,46,147,.18), transparent 60%),
+      radial-gradient(ellipse 70% 40% at 90% 75%, rgba(40,224,255,.15), transparent 60%),
+      var(--fondo);
+  }
 
-    <style>
-        /* =========================================
-           TRIKI HUB - CSS COMPLETO
-           ========================================= */
-        :root {
-            --bg: #050308;
-            --neon-pink: #ff267a;
-            --neon-purple: #b026ff;
-            --neon-blue: #00f0ff;
-            --neon-cyan: #7df9ff;
-            --glass-bg: rgba(255, 255, 255, 0.045);
-            --glass-border: rgba(255, 255, 255, 0.14);
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
-            --safe-top: env(safe-area-inset-top, 0px);
-        }
+  /* ===== NEONES DE FONDO ===== */
+  .neon-line{ position:absolute; border-radius:100px; filter:blur(1px); opacity:.8; }
+  .nl1{ width:140px; height:4px; background:var(--rosa); box-shadow:0 0 14px var(--rosa); top:18%; left:-30px; transform:rotate(-20deg); }
+  .nl2{ width:120px; height:4px; background:var(--cyan); box-shadow:0 0 14px var(--cyan); top:26%; right:-25px; transform:rotate(18deg); }
+  .nl3{ width:90px; height:4px; background:var(--morado); box-shadow:0 0 14px var(--morado); top:55%; left:-20px; transform:rotate(24deg); }
+  .nl4{ width:110px; height:4px; background:var(--verde); box-shadow:0 0 12px var(--verde); top:62%; right:-20px; transform:rotate(-16deg); }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        
-        html, body {
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Outfit', system-ui, sans-serif;
-            background: var(--bg);
-            color: #fff;
-        }
+  .star{ position:absolute; width:3px; height:3px; background:#fff; border-radius:50%; opacity:.6; }
 
-        body::-webkit-scrollbar, *::-webkit-scrollbar { display: none; width: 0; }
+  /* ===== MÁQUINAS ARCADE (fondos laterales) ===== */
+  .arcade{
+    position:absolute; bottom:12%;
+    width:86px; height:150px;
+    background:linear-gradient(180deg,#241436,#160b22);
+    border:2px solid rgba(255,255,255,.12);
+    border-radius:10px 10px 6px 6px;
+    box-shadow:0 0 24px rgba(176,77,255,.35), inset 0 0 12px rgba(0,0,0,.6);
+  }
+  .arcade::before{ /* pantalla encendida */
+    content:''; position:absolute; top:14px; left:10px; right:10px; height:52px;
+    background:linear-gradient(135deg,var(--cyan),var(--morado));
+    border-radius:6px;
+    box-shadow:0 0 18px rgba(40,224,255,.7), inset 0 0 10px rgba(255,255,255,.4);
+    animation:screenFlicker 2.4s infinite;
+  }
+  .arcade::after{ /* panel de botones */
+    content:''; position:absolute; bottom:22px; left:12px; right:12px; height:26px;
+    background:
+      radial-gradient(circle at 20% 50%, var(--rosa) 4px, transparent 5px),
+      radial-gradient(circle at 50% 50%, var(--amarillo) 4px, transparent 5px),
+      radial-gradient(circle at 80% 50%, var(--verde) 4px, transparent 5px),
+      #1b0f2a;
+    border-radius:6px;
+  }
+  .arcade.left{ left:-18px; transform:rotate(8deg); }
+  .arcade.right{ right:-18px; transform:rotate(-8deg); }
+  .arcade.right::before{ background:linear-gradient(135deg,var(--rosa),var(--amarillo)); }
 
-        /* Fondo Neón */
-        .bg-fx { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-        .bg-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; animation: float 10s infinite alternate; }
-        .orb-1 { width: 40vw; height: 40vw; left: -10vw; top: -10vw; background: radial-gradient(circle, var(--neon-purple), transparent 70%); }
-        .orb-2 { width: 50vw; height: 50vw; right: -15vw; top: 20vh; background: radial-gradient(circle, var(--neon-pink), transparent 70%); }
-        .orb-3 { width: 45vw; height: 45vw; left: 10vw; bottom: -15vh; background: radial-gradient(circle, var(--neon-blue), transparent 70%); }
-        
-        @keyframes float { to { transform: translate(30px, -30px) scale(1.1); } }
+  @keyframes screenFlicker{ 0%,100%{opacity:1} 50%{opacity:.75} }
 
-        .glass {
-            background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 24px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-        }
+  /* ===== LOGO TRIKI (graffiti, cada letra un color) ===== */
+  .logo{
+    position:absolute; top:9%; left:0; right:0;
+    text-align:center;
+    font-family:'Luckiest Guy',cursive;
+    font-size:64px;
+    letter-spacing:2px;
+    animation:logoGlow 2.6s ease-in-out infinite;
+  }
+  .logo span{
+    display:inline-block;
+    -webkit-text-stroke:3px #12081d;
+    text-shadow:0 4px 0 #12081d, 0 0 22px currentColor;
+  }
+  .logo span:nth-child(1){ color:var(--rosa);    transform:rotate(-6deg); }
+  .logo span:nth-child(2){ color:var(--cyan);    transform:rotate(4deg) translateY(-3px); }
+  .logo span:nth-child(3){ color:var(--amarillo);transform:rotate(-3deg); }
+  .logo span:nth-child(4){ color:var(--verde);   transform:rotate(5deg) translateY(-2px); }
+  .logo span:nth-child(5){ color:var(--morado);  transform:rotate(-5deg); }
 
-        /* Splash */
-        #splash {
-            position: fixed; inset: 0; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: var(--bg);
-            transition: opacity 0.8s ease, visibility 0.8s;
-        }
-        #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-        .splash-logo { font-size: 5rem; font-weight: 900; background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple), var(--neon-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .splash-bar { width: 200px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 30px; overflow: hidden; }
-        .splash-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink)); animation: load 2.5s ease forwards; }
-        @keyframes load { to { width: 100%; } }
+  @keyframes logoGlow{ 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.25)} }
 
-        /* Layout App */
-        #app {
-            height: 100vh; height: 100dvh;
-            display: grid;
-            grid-template-rows: auto 1fr auto auto;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        #app.visible { opacity: 1; }
+  /* ===== ESCENA CENTRAL ===== */
+  .scene{ position:absolute; inset:0; }
 
-        /* Header */
-        header {
-            padding: calc(15px + var(--safe-top)) 16px 10px;
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(5,3,8,0.6);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            z-index: 100;
-        }
-        .balance { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 50px; }
-        .balance-icon { font-size: 1.2rem; filter: drop-shadow(0 0 8px gold); }
-        .balance-text { display: flex; flex-direction: column; line-height: 1; }
-        .balance-label { font-size: 0.7rem; color: rgba(255,255,255,0.6); font-weight: 600; }
-        .balance-value { font-size: 1rem; font-weight: 800; color: var(--neon-cyan); }
-        .logo-header { font-size: 1.4rem; font-weight: 900; letter-spacing: 2px; background: linear-gradient(to right, #fff, var(--neon-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .lang-btn { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; border: none; background: rgba(255,255,255,0.05); color: #fff; font-size: 1.2rem; }
+  .hero{
+    position:absolute; left:50%; top:38%;
+    transform:translateX(-50%);
+    width:170px;
+    animation:floatY 3s ease-in-out infinite;
+    filter:drop-shadow(0 14px 26px rgba(40,224,255,.45));
+  }
 
-        /* Páginas */
-        main { position: relative; overflow: hidden; }
-        .page { position: absolute; inset: 0; padding: 16px; overflow-y: auto; display: none; animation: fadeIn 0.4s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .zombie{ position:absolute; width:84px; animation:floatY 3.4s ease-in-out infinite; }
+  .z1{ left:6%;  top:52%; animation-delay:.3s; filter:drop-shadow(0 10px 16px rgba(61,255,124,.4)); }
+  .z2{ right:6%; top:50%; animation-delay:.8s; filter:drop-shadow(0 10px 16px rgba(176,77,255,.4)); }
+  .z3{ left:50%; top:66%; transform:translateX(-50%); width:74px; animation-delay:.5s; filter:drop-shadow(0 10px 16px rgba(40,224,255,.4)); }
 
-        /* Música */
-        .player-card { padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 20px; }
-        .disc { width: 180px; height: 180px; border-radius: 50%; background: conic-gradient(from 0deg, #111, #333, #111); box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.8); display: grid; place-items: center; animation: spin 8s linear infinite; animation-play-state: paused; }
-        .disc.playing { animation-play-state: running; }
-        .disc-inner { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .track-info { text-align: center; }
-        .track-title { font-size: 1.5rem; font-weight: 800; }
-        .track-artist { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin-top: 4px; }
-        .progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin: 10px 0; }
-        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink)); transition: width 0.3s; }
-        .controls { display: flex; gap: 20px; align-items: center; }
-        .ctrl-btn { background: none; border: none; color: #fff; font-size: 1.5rem; opacity: 0.7; }
-        .play-btn { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); display: grid; place-items: center; font-size: 1.8rem; opacity: 1; box-shadow: 0 10px 30px rgba(176,38,255,0.4); }
+  @keyframes floatY{ 0%,100%{translate:0 0} 50%{translate:0 -10px} }
 
-        /* Listas y Tarjetas */
-        .section-title { font-size: 1.1rem; font-weight: 700; margin: 20px 0 12px; }
-        .list-item { display: flex; align-items: center; gap: 14px; padding: 12px; margin-bottom: 12px; border-radius: 16px; }
-        .item-thumb { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(45deg, var(--neon-purple), var(--neon-blue)); flex-shrink: 0; }
-        .item-info { flex: 1; }
-        .item-name { font-weight: 600; display: block; }
-        .item-sub { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
-        .item-action { background: rgba(255,255,255,0.1); border: none; color: #fff; width: 36px; height: 36px; border-radius: 10px; }
+  /* ===== MONEDAS TC EN EL SUELO ===== */
+  .coin{
+    position:absolute;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff3b0, #ffd21f 45%, #c98a00 90%);
+    box-shadow:0 0 12px rgba(255,210,31,.75), inset 0 -3px 6px rgba(0,0,0,.3);
+    display:grid; place-items:center;
+    font-weight:800; color:#7a5200;
+    animation:coinShine 1.8s ease-in-out infinite;
+  }
+  @keyframes coinShine{ 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.3)} }
 
-        /* Videos */
-        .search-box { display: flex; gap: 10px; margin-bottom: 16px; }
-        .search-input { flex: 1; padding: 12px 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; font-family: inherit; }
-        .search-btn { padding: 12px 18px; border-radius: 16px; border: none; background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); color: #fff; font-weight: 700; }
-        .video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .video-card { border-radius: 16px; overflow: hidden; background: rgba(255,255,255,0.05); }
-        .video-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
-        .video-card p { padding: 8px; font-size: 0.8rem; font-weight: 600; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .yt-player-modal { position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.9); display: none; flex-direction: column; justify-content: center; padding: 20px; }
-        .yt-player-modal.active { display: flex; }
-        .yt-player-close { position: absolute; top: 20px; right: 20px; background: #fff; color: #000; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; font-weight: bold; }
+  /* perspectiva: más chicas arriba, más grandes abajo */
+  .c1{ width:16px;height:16px;font-size:7px;  left:46%; top:74%; }
+  .c2{ width:16px;height:16px;font-size:7px;  left:54%; top:76%; animation-delay:.2s;}
+  .c3{ width:20px;height:20px;font-size:8px;  left:40%; top:79%; animation-delay:.4s;}
+  .c4{ width:20px;height:20px;font-size:8px;  left:58%; top:81%; animation-delay:.1s;}
+  .c5{ width:26px;height:26px;font-size:10px; left:32%; top:84%; animation-delay:.6s;}
+  .c6{ width:26px;height:26px;font-size:10px; left:64%; top:85%; animation-delay:.3s;}
+  .c7{ width:32px;height:32px;font-size:12px; left:24%; top:89%; animation-delay:.5s;}
+  .c8{ width:32px;height:32px;font-size:12px; left:70%; top:90%; animation-delay:.7s;}
+  .c9{ width:38px;height:38px;font-size:14px; left:44%; top:92%; animation-delay:.2s;}
 
-        /* Tareas */
-        .task-card { padding: 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
-        .task-btn { padding: 10px 16px; border-radius: 14px; border: none; background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); color: #fff; font-weight: 700; font-size: 0.9rem; }
-        .task-btn:disabled { opacity: 0.5; background: #444; }
-        .portal-btn { display: block; width: 100%; padding: 18px; margin-top: 10px; border-radius: 20px; border: none; background: linear-gradient(135deg, #00f0ff, #b026ff); color: #fff; font-weight: 900; font-size: 1.1rem; box-shadow: 0 10px 30px rgba(0,240,255,0.3); }
+  /* ===== BARRA DE CARGA ===== */
+  .loadbar-wrap{
+    position:absolute; bottom:6%; left:50%; transform:translateX(-50%);
+    width:70%; text-align:center;
+  }
+  .loadbar{
+    width:100%; height:10px;
+    background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:100px; overflow:hidden;
+  }
+  .loadbar .fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,var(--rosa),var(--amarillo),var(--verde),var(--cyan),var(--morado));
+    border-radius:100px;
+    box-shadow:0 0 14px rgba(255,255,255,.5);
+    animation:loadFill 3s ease forwards;
+  }
+  @keyframes loadFill{ 0%{width:0} 60%{width:70%} 100%{width:100%} }
 
-        /* Ads Banner Container */
-        .ads-container { padding: 0 16px; height: 60px; display: flex; align-items: center; justify-content: center; }
-        #adsgram-banner { width: 100%; max-width: 320px; height: 50px; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: rgba(255,255,255,0.5); border: 1px dashed rgba(255,255,255,0.2); }
-
-        /* Tabbar */
-        nav {
-            margin: 0 12px calc(10px + var(--safe-bottom));
-            padding: 8px;
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 6px;
-            border-radius: 28px;
-            background: rgba(10,5,20,0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .tab-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; border: none; background: none; color: rgba(255,255,255,0.5); font-size: 0.7rem; font-weight: 600; }
-        .tab-btn.active { color: var(--neon-cyan); }
-        .tab-btn svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
-        .tab-btn.active svg { filter: drop-shadow(0 0 8px var(--neon-cyan)); }
-
-        /* Toast */
-        #toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%) translateY(20px); padding: 12px 24px; border-radius: 50px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: #fff; font-weight: 700; opacity: 0; pointer-events: none; transition: all 0.3s ease; z-index: 3000; white-space: nowrap; }
-        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    </style>
+  .loadtext{
+    margin-top:8px; font-size:12px; font-weight:600;
+    color:rgba(255,255,255,.65); letter-spacing:1px;
+  }
+</style>
 </head>
 <body>
 
-    <!-- Fondo -->
-    <div class="bg-fx">
-        <div class="bg-orb orb-1"></div>
-        <div class="bg-orb orb-2"></div>
-        <div class="bg-orb orb-3"></div>
-    </div>
+<div class="load-screen">
 
-    <!-- Splash -->
-    <div id="splash">
-        <h1 class="splash-logo">Triki</h1>
-        <div class="splash-bar"><div class="splash-fill"></div></div>
-    </div>
+  <!-- neones y estrellas de fondo -->
+  <div class="neon-line nl1"></div>
+  <div class="neon-line nl2"></div>
+  <div class="neon-line nl3"></div>
+  <div class="neon-line nl4"></div>
+  <div class="star" style="top:12%;left:20%"></div>
+  <div class="star" style="top:8%;left:70%"></div>
+  <div class="star" style="top:30%;left:85%"></div>
+  <div class="star" style="top:44%;left:10%"></div>
+  <div class="star" style="top:22%;left:45%"></div>
 
-    <!-- App -->
-    <div id="app">
-        <header>
-            <div class="balance glass">
-                <span class="balance-icon">🪙</span>
-                <div class="balance-text">
-                    <span class="balance-label">TrikiCoin</span>
-                    <span class="balance-value" id="balance-val">0</span>
-                </div>
-            </div>
-            <div class="logo-header">TRIKI</div>
-            <button class="lang-btn glass">🌐</button>
-        </header>
+  <!-- máquinas arcade a los lados -->
+  <div class="arcade left"></div>
+  <div class="arcade right"></div>
 
-        <main>
-            <!-- MÚSICA -->
-            <section id="page-music" class="page active">
-                <div class="player-card glass">
-                    <div class="disc" id="disc"><div class="disc-inner"></div></div>
-                    <div class="track-info">
-                        <div class="track-title" id="track-title">Neon Nights</div>
-                        <div class="track-artist" id="track-artist">Triki Synthwave</div>
-                    </div>
-                    <div class="progress-bar" id="prog-bar"><div class="progress-fill" id="prog-fill"></div></div>
-                    <div class="controls">
-                        <button class="ctrl-btn" id="prev-btn">⏮</button>
-                        <button class="play-btn glass" id="play-btn">▶</button>
-                        <button class="ctrl-btn" id="next-btn">⏭</button>
-                    </div>
-                </div>
-                <h3 class="section-title">Tendencias Triki</h3>
-                <div id="music-list"></div>
-            </section>
+  <!-- LOGO TRIKI graffiti multicolor -->
+  <div class="logo">
+    <span>T</span><span>r</span><span>i</span><span>k</span><span>i</span>
+  </div>
 
-            <!-- VIDEOS -->
-            <section id="page-videos" class="page">
-                <div class="search-box">
-                    <input type="text" class="search-input" id="yt-search" placeholder="Buscar en YouTube...">
-                    <button class="search-btn" id="yt-search-btn">🔍</button>
-                </div>
-                <div class="video-grid" id="yt-results"></div>
-                
-                <h3 class="section-title">Películas y Series</h3>
-                <div class="search-box">
-                    <input type="text" class="search-input" id="movie-search" placeholder="Buscar película...">
-                    <button class="search-btn" id="movie-search-btn">🎬</button>
-                </div>
-                <div class="video-grid" id="movie-results"></div>
-            </section>
+  <!-- ESCENA: personaje + zombies -->
+  <div class="scene">
 
-            <!-- TAREAS -->
-            <section id="page-tasks" class="page">
-                <h3 class="section-title">Misiones Diarias</h3>
-                
-                <div class="task-card glass">
-                    <div>
-                        <strong>Ver Anuncio Video</strong>
-                        <div class="item-sub">+100 TrikiCoins</div>
-                    </div>
-                    <button class="task-btn" id="task-ad-btn">Ver Ad</button>
-                </div>
+    <!-- Personaje principal: burbuja celeste, zapatos rojos, carita feliz -->
+    <svg class="hero" viewBox="0 0 200 230">
+      <defs>
+        <radialGradient id="burb" cx="35%" cy="30%">
+          <stop offset="0%"  stop-color="#d8fbff"/>
+          <stop offset="45%" stop-color="#59e6ff"/>
+          <stop offset="100%" stop-color="#0aa9d6"/>
+        </radialGradient>
+      </defs>
+      <!-- zapatitos rojos -->
+      <ellipse cx="72"  cy="208" rx="24" ry="13" fill="#e8332a"/>
+      <ellipse cx="128" cy="208" rx="24" ry="13" fill="#e8332a"/>
+      <ellipse cx="72"  cy="204" rx="24" ry="10" fill="#ff5a4e"/>
+      <ellipse cx="128" cy="204" rx="24" ry="10" fill="#ff5a4e"/>
+      <!-- cuerpo burbuja -->
+      <circle cx="100" cy="112" r="82" fill="url(#burb)"/>
+      <!-- brillo -->
+      <ellipse cx="68" cy="72" rx="24" ry="15" fill="rgba(255,255,255,.6)"/>
+      <!-- ojos -->
+      <circle cx="76"  cy="102" r="15" fill="#fff"/>
+      <circle cx="124" cy="102" r="15" fill="#fff"/>
+      <circle cx="79"  cy="105" r="7"  fill="#1b1b1b"/>
+      <circle cx="121" cy="105" r="7"  fill="#1b1b1b"/>
+      <!-- sonrisa feliz -->
+      <path d="M72 138 Q100 162 128 138" stroke="#1b1b1b" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <!-- mejillas -->
+      <circle cx="58"  cy="126" r="8" fill="rgba(255,120,160,.5)"/>
+      <circle cx="142" cy="126" r="8" fill="rgba(255,120,160,.5)"/>
+    </svg>
 
-                <div class="task-card glass">
-                    <div>
-                        <strong>Jugar en el Portal</strong>
-                        <div class="item-sub">+200 TrikiCoins</div>
-                    </div>
-                    <button class="task-btn" id="task-portal-btn">Jugar</button>
-                </div>
+    <!-- Zombie 1: le falta un pedazo de cerebro (muesca en la cabeza) -->
+    <svg class="zombie z1" viewBox="0 0 100 120">
+      <!-- cuerpo -->
+      <rect x="26" y="52" width="48" height="46" rx="20" fill="#3dff7c"/>
+      <!-- cabeza con muesca (falta pedazo) -->
+      <path d="M30 34 a22 22 0 0 1 40 -8 l-6 10 l8 4 a22 22 0 0 1 -42 6 z" fill="#54ff8d"/>
+      <!-- hueco del cerebro -->
+      <path d="M52 12 q10 -6 14 4 q-8 2 -14 -4z" fill="#0b0614"/>
+      <!-- ojos -->
+      <circle cx="42" cy="34" r="7" fill="#fff"/><circle cx="44" cy="35" r="3" fill="#1b1b1b"/>
+      <circle cx="60" cy="32" r="7" fill="#fff"/><circle cx="62" cy="33" r="3" fill="#1b1b1b"/>
+      <!-- brazos -->
+      <rect x="12" y="58" width="16" height="10" rx="5" fill="#3dff7c"/>
+      <rect x="72" y="58" width="16" height="10" rx="5" fill="#3dff7c"/>
+      <!-- piernas -->
+      <rect x="34" y="94" width="12" height="16" rx="6" fill="#2bd465"/>
+      <rect x="54" y="94" width="12" height="16" rx="6" fill="#2bd465"/>
+    </svg>
 
-                <button class="portal-btn" id="open-portal-direct">🎮 Abrir Portal de Juegos</button>
-            </section>
+    <!-- Zombie 2: le falta una mano (solo un brazo) -->
+    <svg class="zombie z2" viewBox="0 0 100 120">
+      <rect x="26" y="52" width="48" height="46" rx="20" fill="#b04dff"/>
+      <circle cx="50" cy="32" r="24" fill="#c46bff"/>
+      <!-- ojos -->
+      <circle cx="42" cy="32" r="7" fill="#fff"/><circle cx="44" cy="33" r="3" fill="#1b1b1b"/>
+      <circle cx="60" cy="32" r="7" fill="#fff"/><circle cx="62" cy="33" r="3" fill="#1b1b1b"/>
+      <!-- solo UN brazo (el otro falta) -->
+      <rect x="12" y="58" width="16" height="10" rx="5" fill="#b04dff"/>
+      <!-- piernas -->
+      <rect x="34" y="94" width="12" height="16" rx="6" fill="#9330e0"/>
+      <rect x="54" y="94" width="12" height="16" rx="6" fill="#9330e0"/>
+    </svg>
 
-            <!-- TOP -->
-            <section id="page-top" class="page">
-                <h3 class="section-title">🏆 Tabla de Clasificación</h3>
-                <div class="list-item glass">
-                    <div class="item-thumb" style="background: linear-gradient(45deg, gold, orange);"></div>
-                    <div class="item-info">
-                        <span class="item-name">Usuario Top 1</span>
-                        <span class="item-sub">50,000 TrikiCoins</span>
-                    </div>
-                </div>
-                <div class="list-item glass">
-                    <div class="item-thumb" style="background: linear-gradient(45deg, silver, gray);"></div>
-                    <div class="item-info">
-                        <span class="item-name">Usuario Top 2</span>
-                        <span class="item-sub">32,000 TrikiCoins</span>
-                    </div>
-                </div>
-            </section>
+    <!-- Zombie 3: le falta un pie (solo una pierna) -->
+    <svg class="zombie z3" viewBox="0 0 100 120">
+      <rect x="26" y="52" width="48" height="46" rx="20" fill="#28e0ff"/>
+      <circle cx="50" cy="32" r="24" fill="#54e8ff"/>
+      <!-- ojos -->
+      <circle cx="42" cy="32" r="7" fill="#fff"/><circle cx="44" cy="33" r="3" fill="#1b1b1b"/>
+      <circle cx="60" cy="32" r="7" fill="#fff"/><circle cx="62" cy="33" r="3" fill="#1b1b1b"/>
+      <!-- brazos -->
+      <rect x="12" y="58" width="16" height="10" rx="5" fill="#28e0ff"/>
+      <rect x="72" y="58" width="16" height="10" rx="5" fill="#28e0ff"/>
+      <!-- solo UNA pierna (la otra falta) -->
+      <rect x="44" y="94" width="12" height="18" rx="6" fill="#12b8d6"/>
+    </svg>
 
-            <!-- BILLETERA -->
-            <section id="page-wallet" class="page">
-                <div class="player-card glass">
-                    <div style="font-size: 4rem;">💳</div>
-                    <div class="track-info">
-                        <div class="track-title">Tu Billetera</div>
-                        <div class="track-artist">Conecta para recibir pagos reales</div>
-                    </div>
-                    <button class="search-btn" style="width: 100%; margin-top: 20px;">Conectar Telegram Wallet</button>
-                </div>
-            </section>
-        </main>
+    <!-- Monedas TC en el suelo (perspectiva) -->
+    <div class="coin c1">TC</div>
+    <div class="coin c2">TC</div>
+    <div class="coin c3">TC</div>
+    <div class="coin c4">TC</div>
+    <div class="coin c5">TC</div>
+    <div class="coin c6">TC</div>
+    <div class="coin c7">TC</div>
+    <div class="coin c8">TC</div>
+    <div class="coin c9">TC</div>
 
-        <!-- Banner Ads -->
-        <div class="ads-container">
-            <div id="adsgram-banner">Banner AdsGram (task-52935)</div>
-        </div>
+  </div>
 
-        <!-- Tabbar -->
-        <nav>
-            <button class="tab-btn active" data-tab="page-music">
-                <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-                <span>Música</span>
-            </button>
-            <button class="tab-btn" data-tab="page-videos">
-                <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-                <span>Videos</span>
-            </button>
-            <button class="tab-btn" data-tab="page-tasks">
-                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                <span>Tareas</span>
-            </button>
-            <button class="tab-btn" data-tab="page-top">
-                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                <span>Top</span>
-            </button>
-            <button class="tab-btn" data-tab="page-wallet">
-                <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                <span>Wallet</span>
-            </button>
-        </nav>
-    </div>
+  <!-- BARRA DE CARGA -->
+  <div class="loadbar-wrap">
+    <div class="loadbar"><div class="fill"></div></div>
+    <div class="loadtext">Cargando Triki...</div>
+  </div>
 
-    <!-- Modal YouTube -->
-    <div class="yt-player-modal" id="yt-modal">
-        <button class="yt-player-close" id="yt-close">X</button>
-        <div id="yt-player-container" style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 16px; overflow: hidden;"></div>
-    </div>
+</div>
 
-    <div id="toast"></div>
-
-    <script>
-        /* =========================================
-           TRIKI HUB - LÓGICA COMPLETA (JS)
-           ========================================= */
-
-        // --- TELEGRAM WEBAPP ---
-        const tg = window.Telegram?.WebApp;
-        if (tg) {
-            tg.ready();
-            tg.expand();
-            if (tg.setHeaderColor) tg.setHeaderColor("#050308");
-            if (tg.setBackgroundColor) tg.setBackgroundColor("#050308");
-        }
-
-        // --- ESTADO GLOBAL ---
-        const STATE = {
-            balance: parseInt(localStorage.getItem('triki_balance') || '0'),
-            currentTrack: 0,
-            isPlaying: false,
-            audio: new Audio()
-        };
-
-        const PLAYLIST = [
-            { title: "Neon Nights", artist: "Triki Synthwave", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-            { title: "Cyber Drive", artist: "Triki Electro", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-            { title: "Midnight Pulse", artist: "Triki Chill", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
-        ];
-
-        // --- CONFIGURACIÓN APIS REALES ---
-        const API_KEYS = {
-            youtube: "AIzaSyB8zshtAY6U3pbzu7bRw3gD8Lg8pP2s99I",
-            movies: "d728ab4a238e4528cfb67b11bb406fd3", // Asumiendo TMDB
-            portalGames: "https://www.cdndn.com/wall/HKsmGu74"
-        };
-
-        const ADS_CONFIG = {
-            adsgramVideoId: "52934",
-            adsgramBannerId: "task-52935"
-        };
-
-        // --- UI HELPERS ---
-        const $ = (sel) => document.querySelector(sel);
-        const $all = (sel) => document.querySelectorAll(sel);
-
-        function updateBalanceUI() {
-            $('#balance-val').textContent = STATE.balance.toLocaleString();
-        }
-
-        function addCoins(amount, reason) {
-            STATE.balance += amount;
-            localStorage.setItem('triki_balance', STATE.balance);
-            updateBalanceUI();
-            showToast(`+${amount} TrikiCoins 🪙`);
-            if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        }
-
-        function showToast(msg) {
-            const toast = $('#toast');
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2500);
-        }
-
-        // --- NAVEGACIÓN ---
-        function initTabs() {
-            $all('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    $all('.tab-btn').forEach(b => b.classList.remove('active'));
-                    $all('.page').forEach(p => p.classList.remove('active'));
-                    
-                    btn.classList.add('active');
-                    $(`#${btn.dataset.tab}`).classList.add('active');
-                    if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
-                });
-            });
-        }
-
-        // --- MÚSICA Y REPRODUCTOR ---
-        function initMusic() {
-            const listContainer = $('#music-list');
-            PLAYLIST.forEach((track, i) => {
-                const div = document.createElement('div');
-                div.className = 'list-item glass';
-                div.innerHTML = `
-                    <div class="item-thumb"></div>
-                    <div class="item-info">
-                        <span class="item-name">${track.title}</span>
-                        <span class="item-sub">${track.artist}</span>
-                    </div>
-                    <button class="item-action" data-idx="${i}">▶</button>
-                `;
-                div.querySelector('button').addEventListener('click', () => loadTrack(i, true));
-                listContainer.appendChild(div);
-            });
-
-            $('#play-btn').addEventListener('click', togglePlay);
-            $('#prev-btn').addEventListener('click', () => changeTrack(-1));
-            $('#next-btn').addEventListener('click', () => changeTrack(1));
-
-            STATE.audio.addEventListener('timeupdate', () => {
-                const pct = (STATE.audio.currentTime / STATE.audio.duration) * 100 || 0;
-                $('#prog-fill').style.width = `${pct}%`;
-            });
-
-            STATE.audio.addEventListener('ended', () => {
-                triggerRewardedAd("Canción terminada");
-                changeTrack(1);
-            });
-
-            loadTrack(0, false);
-        }
-
-        function loadTrack(idx, autoPlay) {
-            STATE.currentTrack = idx;
-            const track = PLAYLIST[idx];
-            STATE.audio.src = track.src;
-            $('#track-title').textContent = track.title;
-            $('#track-artist').textContent = track.artist;
-            if (autoPlay) STATE.audio.play();
-        }
-
-        function togglePlay() {
-            if (STATE.audio.paused) {
-                STATE.audio.play();
-                $('#play-btn').textContent = '⏸';
-                $('#disc').classList.add('playing');
-                STATE.isPlaying = true;
-            } else {
-                STATE.audio.pause();
-                $('#play-btn').textContent = '▶';
-                $('#disc').classList.remove('playing');
-                STATE.isPlaying = false;
-            }
-        }
-
-        function changeTrack(dir) {
-            triggerRewardedAd("Cambio de pista");
-            let next = STATE.currentTrack + dir;
-            if (next < 0) next = PLAYLIST.length - 1;
-            if (next >= PLAYLIST.length) next = 0;
-            loadTrack(next, true);
-            $('#play-btn').textContent = '⏸';
-            $('#disc').classList.add('playing');
-        }
-
-        // --- PUBLICIDAD (ADSGRAM & MONETAG) ---
-        let AdControllerVideo = null;
-        let AdControllerBanner = null;
-
-        function initAds() {
-            // Esperar a que cargue el SDK de AdsGram
-            const checkAdsgram = setInterval(() => {
-                if (typeof Adsgram !== "undefined") {
-                    clearInterval(checkAdsgram);
-                    try {
-                        AdControllerVideo = Adsgram.init({ blockId: ADS_CONFIG.adsgramVideoId });
-                        console.log("AdsGram Video listo");
-                        
-                        // Intentar cargar banner
-                        AdControllerBanner = Adsgram.init({ blockId: ADS_CONFIG.adsgramBannerId });
-                        AdControllerBanner.showBanner({
-                            blockId: ADS_CONFIG.adsgramBannerId,
-                            containerId: "adsgram-banner"
-                        }).catch(e => console.log("Banner AdsGram:", e));
-                    } catch(e) { console.warn("Error AdsGram", e); }
-                }
-            }, 500);
-        }
-
-        function triggerRewardedAd(reason = "") {
-            console.log(`Disparando anuncio por: ${reason}`);
-            
-            // 1. Intentar AdsGram Video (30s)
-            if (AdControllerVideo) {
-                AdControllerVideo.show().then((result) => {
-                    addCoins(100, reason);
-                }).catch((result) => {
-                    console.log("Usuario cerró o error AdsGram");
-                    // Fallback a Monetag si falla
-                    tryMonetagReward();
-                });
-            } else {
-                // 2. Fallback Monetag
-                tryMonetagReward();
-            }
-        }
-
-        function tryMonetagReward() {
-            if (typeof show_11992190 === 'function') {
-                show_11992190().then(() => {
-                    addCoins(100, "Monetag Ad");
-                }).catch(e => {
-                    console.log("Monetag cancelado o error", e);
-                    // Fallback local si no hay ads configurados aún
-                    simulateLocalAd();
-                });
-            } else {
-                console.warn("Función Monetag show_11992190 no encontrada. Asegúrate de pegar el script de Monetag en el <head>.");
-                simulateLocalAd();
-            }
-        }
-
-        function simulateLocalAd() {
-            showToast("Simulando Ad de 3s...");
-            setTimeout(() => addCoins(100, "Ad Local"), 3000);
-        }
-
-        // Botón manual de tareas para ver anuncio
-        $('#task-ad-btn').addEventListener('click', () => triggerRewardedAd("Tarea Manual"));
-
-        // --- VIDEOS (YOUTUBE API & MOVIES) ---
-        function initVideos() {
-            $('#yt-search-btn').addEventListener('click', searchYouTube);
-            $('#yt-search').addEventListener('keypress', (e) => { if(e.key === 'Enter') searchYouTube(); });
-
-            $('#movie-search-btn').addEventListener('click', searchMovies);
-            $('#movie-search').addEventListener('keypress', (e) => { if(e.key === 'Enter') searchMovies(); });
-
-            $('#yt-close').addEventListener('click', () => {
-                $('#yt-modal').classList.remove('active');
-                $('#yt-player-container').innerHTML = '';
-            });
-        }
-
-        async function searchYouTube() {
-            const q = $('#yt-search').value.trim();
-            if (!q) return;
-            
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=6&q=${encodeURIComponent(q)}&type=video&key=${API_KEYS.youtube}`;
-            
-            try {
-                const res = await fetch(url);
-                const data = await res.json();
-                renderYTResults(data.items);
-            } catch (e) {
-                showToast("Error buscando en YouTube");
-            }
-        }
-
-        function renderYTResults(items) {
-            const container = $('#yt-results');
-            container.innerHTML = '';
-            items.forEach(item => {
-                const id = item.id.videoId;
-                const title = item.snippet.title;
-                const thumb = item.snippet.thumbnails.medium.url;
-                
-                const card = document.createElement('div');
-                card.className = 'video-card';
-                card.innerHTML = `
-                    <img src="${thumb}" alt="${title}">
-                    <p>${title}</p>
-                `;
-                card.addEventListener('click', () => playYTVideo(id));
-                container.appendChild(card);
-            });
-        }
-
-        function playYTVideo(videoId) {
-            const modal = $('#yt-modal');
-            const container = $('#yt-player-container');
-            modal.classList.add('active');
-            container.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-        }
-
-        async function searchMovies() {
-            const q = $('#movie-search').value.trim();
-            if (!q) return;
-            
-            // Usando TMDB como ejemplo con tu API Key
-            const url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEYS.movies}&query=${encodeURIComponent(q)}`;
-            
-            try {
-                const res = await fetch(url);
-                const data = await res.json();
-                renderMovieResults(data.results);
-            } catch (e) {
-                showToast("Error buscando películas");
-            }
-        }
-
-        function renderMovieResults(items) {
-            const container = $('#movie-results');
-            container.innerHTML = '';
-            items.slice(0, 6).forEach(item => {
-                const title = item.title;
-                const thumb = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : 'https://via.placeholder.com/200x300?text=No+Image';
-                
-                const card = document.createElement('div');
-                card.className = 'video-card';
-                card.innerHTML = `
-                    <img src="${thumb}" alt="${title}" style="aspect-ratio: 2/3;">
-                    <p>${title}</p>
-                `;
-                card.addEventListener('click', () => showToast("Reproductor de películas en desarrollo"));
-                container.appendChild(card);
-            });
-        }
-
-        // --- TAREAS Y PORTAL ---
-        function initTasks() {
-            $('#task-portal-btn').addEventListener('click', () => {
-                // Abrir portal
-                if (tg?.openLink) {
-                    tg.openLink(API_KEYS.portalGames);
-                } else {
-                    window.open(API_KEYS.portalGames, '_blank');
-                }
-                
-                // Simular verificación de tarea al volver (en producción esto lo valida el backend)
-                setTimeout(() => {
-                    if(confirm("¿Completaste la partida en el portal?")) {
-                        addCoins(200, "Portal Jugado");
-                        $('#task-portal-btn').disabled = true;
-                        $('#task-portal-btn').textContent = "Completado";
-                    }
-                }, 5000);
-            });
-
-            $('#open-portal-direct').addEventListener('click', () => {
-                if (tg?.openLink) {
-                    tg.openLink(API_KEYS.portalGames);
-                } else {
-                    window.open(API_KEYS.portalGames, '_blank');
-                }
-            });
-        }
-
-        // --- INICIO ---
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                $('#splash').classList.add('hidden');
-                $('#app').classList.add('visible');
-                
-                updateBalanceUI();
-                initTabs();
-                initMusic();
-                initVideos();
-                initTasks();
-                initAds();
-            }, 2500);
-        });
-
-        // Media Session para segundo plano
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.setActionHandler('play', () => STATE.audio.play());
-            navigator.mediaSession.setActionHandler('pause', () => STATE.audio.pause());
-            navigator.mediaSession.setActionHandler('previoustrack', () => changeTrack(-1));
-            navigator.mediaSession.setActionHandler('nexttrack', () => changeTrack(1));
-        }
-    </script>
 </body>
-  </html>
+    </html>
