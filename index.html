@@ -9,19 +9,16 @@
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   :root{
     --fondo:#0b0614; --rosa:#ff2e93; --cyan:#28e0ff; --amarillo:#ffd21f;
-    --verde:#3dff7c; --morado:#b04dff; --borde:rgba(255,255,255,.1);
+    --verde:#3dff7c; --morado:#b04dff; --borde:rgba(255,255,255,.12);
   }
   html,body{ height:100%; overflow:hidden; background:var(--fondo); font-family:'Inter',sans-serif; color:#fff; }
 
   /* ===== CARGA ===== */
-  #splash{
-    position:fixed; inset:0; z-index:100;
-    background-image:url('FondoTriki.png');
-    background-size:cover; background-position:center;
+  #splash{ position:fixed; inset:0; z-index:100;
+    background-image:url('FondoTriki.png'); background-size:cover; background-position:center;
     display:flex; flex-direction:column; justify-content:flex-end; align-items:center;
     padding:0 24px calc(40px + env(safe-area-inset-bottom,0px));
-    transition:opacity .8s ease, visibility .8s ease;
-  }
+    transition:opacity .8s ease, visibility .8s ease; }
   #splash.oculto{ opacity:0; visibility:hidden; }
   #splash::before{ content:''; position:absolute; inset:0;
     background:linear-gradient(to top, rgba(5,3,10,.85), rgba(5,3,10,.3) 25%, transparent 45%); }
@@ -47,84 +44,106 @@
 
   main{ flex:1; position:relative; overflow:hidden; }
   .page{ position:absolute; inset:0; overflow-y:auto; display:none;
-    padding:calc(14px + env(safe-area-inset-top,0px)) 20px 20px; }
+    background-size:cover; background-position:center; }
   .page.activa{ display:block; }
   .page::-webkit-scrollbar{ display:none; }
 
-  .placeholder{ margin-top:20px; padding:40px 24px; text-align:center;
-    background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-    border:1px dashed rgba(255,255,255,.25); border-radius:24px; }
+  /* Fondos de cada pestaña */
+  #p-juego{ background-image:url('FondoJuego.jpg'); }
+  #p-tareas{ background-image:url('FondoTareas.jpg'); }
+  #p-top{ background-image:url('FondoTop.jpg'); }
+  #p-billetera{ background-image:url('FondoBilletera.jpg'); }
+
+  /* capa oscura sutil para legibilidad */
+  .page-shade{ position:absolute; inset:0; background:rgba(5,3,10,.55); z-index:0; }
+  .page > *:not(.page-shade){ position:relative; z-index:1; }
+
+  .placeholder{ margin:calc(60px + env(safe-area-inset-top,0px)) 20px 20px; padding:40px 24px; text-align:center;
+    background:rgba(255,255,255,.06); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    border:1px dashed rgba(255,255,255,.3); border-radius:24px; }
   .placeholder .ico{ font-size:44px; margin-bottom:14px; }
   .placeholder h2{ font-size:19px; font-weight:900; margin-bottom:8px; }
-  .placeholder p{ font-size:13px; color:rgba(255,255,255,.6); line-height:1.5; }
+  .placeholder p{ font-size:13px; color:rgba(255,255,255,.7); line-height:1.5; }
+
+  /* ===== MÚSICA: fondo dinámico cristalino ===== */
+  #p-musica{ background:none; }
+  .music-bg{ position:absolute; inset:-60px; z-index:0;
+    filter:blur(60px) saturate(1.6); opacity:.6; transform:scale(1.2);
+    transition:background .9s ease; }
+  .music-wrap{ position:relative; z-index:1; padding:calc(16px + env(safe-area-inset-top,0px)) 18px 20px; }
+
+  .glass-panel{ backdrop-filter:blur(22px) saturate(1.4); -webkit-backdrop-filter:blur(22px) saturate(1.4);
+    background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.22);
+    border-radius:26px; padding:20px; text-align:center;
+    box-shadow:0 20px 50px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.25); }
+  .cover{ width:170px; height:170px; border-radius:18px; margin:0 auto 16px;
+    box-shadow:0 14px 34px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.3);
+    transition:background .9s ease; }
+  .m-title{ font-size:19px; font-weight:900; }
+  .m-artist{ font-size:13px; color:rgba(255,255,255,.65); margin-top:3px; }
+  .m-progress{ height:5px; background:rgba(255,255,255,.18); border-radius:100px; margin:16px 0 6px; overflow:hidden; }
+  .m-fill{ height:100%; width:35%; border-radius:100px; background:rgba(255,255,255,.9); }
+  .m-times{ display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,.6); }
+  .m-controls{ display:flex; align-items:center; justify-content:center; gap:26px; margin-top:16px; }
+  .m-btn{ border:none; background:none; color:#fff; font-size:20px; cursor:pointer; opacity:.85; }
+  .m-play{ width:62px; height:62px; border-radius:50%; border:none; color:#fff; font-size:22px; cursor:pointer;
+    background:rgba(255,255,255,.16); backdrop-filter:blur(10px);
+    box-shadow:0 10px 26px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.35); }
+
+  .m-list{ margin-top:16px; display:flex; flex-direction:column; gap:8px; }
+  .m-item{ display:flex; align-items:center; gap:12px; padding:10px; border-radius:16px; cursor:pointer;
+    background:rgba(255,255,255,.07); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.12); }
+  .m-thumb{ width:42px; height:42px; border-radius:10px; flex-shrink:0; }
+  .m-item b{ font-size:13px; display:block; }
+  .m-item span{ font-size:11px; color:rgba(255,255,255,.6); }
 
   /* ===== LAYOUT JUEGO ===== */
   #p-juego.activa{ display:flex; flex-direction:column; gap:8px;
     padding:calc(10px + env(safe-area-inset-top,0px)) 0 0; }
-
-  /* SLOT SUPERIOR: aquí vive el reproductor Y aquí mismo aparece el anuncio 30s */
   .game-top{ flex:0 0 auto; margin:0 10px; position:relative; min-height:52px; }
-
-  .mini-player{ width:100%; display:flex; align-items:center; gap:6px;
-    padding:8px 10px; border-radius:14px;
-    background:rgba(255,255,255,.06); border:1px solid var(--borde); }
+  .mini-player{ width:100%; display:flex; align-items:center; gap:6px; padding:8px 10px; border-radius:14px;
+    background:rgba(10,6,18,.55); backdrop-filter:blur(12px); border:1px solid var(--borde); }
   .mini-cover{ width:32px; height:32px; border-radius:8px; flex-shrink:0;
     background:linear-gradient(135deg,var(--rosa),var(--morado)); }
   .mini-info{ flex:1; min-width:0; }
   .mini-info b{ display:block; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .mini-info span{ color:rgba(255,255,255,.5); font-size:9px; }
+  .mini-info span{ color:rgba(255,255,255,.55); font-size:9px; }
   .mini-btn{ width:26px; height:26px; border-radius:50%; border:none; flex-shrink:0;
-    background:rgba(255,255,255,.12); color:#fff; display:grid; place-items:center;
-    font-size:10px; cursor:pointer; }
-  .mini-btn:active{ background:rgba(255,255,255,.25); }
-
-  /* El anuncio ocupa TODO el slot superior (reemplaza al reproductor) */
-  .ad30-full{ width:100%; display:flex; align-items:center; justify-content:space-between;
-    gap:10px; padding:8px 12px; border-radius:14px;
-    background:linear-gradient(135deg, rgba(255,46,147,.25), rgba(176,77,255,.25));
-    border:1px solid rgba(255,46,147,.5); }
+    background:rgba(255,255,255,.14); color:#fff; display:grid; place-items:center; font-size:10px; cursor:pointer; }
+  .ad30-full{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:8px 12px; border-radius:14px;
+    background:linear-gradient(135deg, rgba(255,46,147,.35), rgba(176,77,255,.35));
+    backdrop-filter:blur(12px); border:1px solid rgba(255,46,147,.55); }
   .ad30-full[hidden]{ display:none; }
-  .ad30-txt{ font-size:11px; font-weight:800; letter-spacing:.5px; }
-  .ad30-txt small{ display:block; font-size:9px; font-weight:600; color:rgba(255,255,255,.6); }
-  .ad30-count{ font-size:22px; font-weight:900; color:var(--amarillo);
-    text-shadow:0 0 12px rgba(255,210,31,.7); }
-  .ad30-skip{ border:none; background:rgba(255,255,255,.12); color:#fff;
-    font-size:9px; font-weight:700; padding:6px 8px; border-radius:8px; cursor:pointer; }
-
-  /* LABERINTO: toca las orillas de lo ANCHO (pantalla completa horizontal) */
+  .ad30-txt{ font-size:11px; font-weight:800; }
+  .ad30-txt small{ display:block; font-size:9px; font-weight:600; color:rgba(255,255,255,.7); }
+  .ad30-count{ font-size:22px; font-weight:900; color:var(--amarillo); text-shadow:0 0 12px rgba(255,210,31,.7); }
+  .ad30-skip{ border:none; background:rgba(255,255,255,.14); color:#fff; font-size:9px; font-weight:700;
+    padding:6px 8px; border-radius:8px; cursor:pointer; }
   .game-area{ flex:1; width:100%;
-    border-top:1px dashed rgba(255,255,255,.28);
-    border-bottom:1px dashed rgba(255,255,255,.28);
-    border-left:none; border-right:none; border-radius:0;
+    border-top:1px dashed rgba(255,255,255,.35); border-bottom:1px dashed rgba(255,255,255,.35);
     display:grid; place-items:center; text-align:center;
-    color:rgba(255,255,255,.4); font-size:12px; font-weight:800; letter-spacing:1px; }
-
-  /* PALANCA: cuadrito pequeño CENTRADO */
+    color:rgba(255,255,255,.6); font-size:12px; font-weight:800; letter-spacing:1px;
+    text-shadow:0 2px 6px rgba(0,0,0,.8); }
   .game-bottom{ flex:0 0 auto; display:flex; justify-content:center; padding:8px 0 10px; }
-  .joy-slot{ width:120px; height:78px;
-    border:1px dashed rgba(255,255,255,.28); border-radius:18px;
+  .joy-slot{ width:120px; height:78px; border:1px dashed rgba(255,255,255,.35); border-radius:18px;
     display:grid; place-items:center; text-align:center; padding:4px;
-    color:rgba(255,255,255,.4); font-size:9px; font-weight:800; letter-spacing:.5px; }
+    color:rgba(255,255,255,.6); font-size:9px; font-weight:800;
+    background:rgba(10,6,18,.4); backdrop-filter:blur(8px); }
 
   /* ===== TABBAR 3D ===== */
   nav{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; padding:10px 10px;
-    background:rgba(11,6,20,.85); backdrop-filter:blur(20px);
-    border-top:1px solid var(--borde); }
-  .tab{ display:flex; flex-direction:column; align-items:center; gap:5px;
-    padding:4px 0; border:none; background:none; cursor:pointer;
-    color:rgba(255,255,255,.45); font-size:10px; font-weight:700; }
-  .tab .caps{
-    width:52px; height:36px; border-radius:16px; display:grid; place-items:center;
+    background:rgba(11,6,20,.85); backdrop-filter:blur(20px); border-top:1px solid var(--borde); }
+  .tab{ display:flex; flex-direction:column; align-items:center; gap:5px; padding:4px 0;
+    border:none; background:none; cursor:pointer; color:rgba(255,255,255,.45); font-size:10px; font-weight:700; }
+  .tab .caps{ width:52px; height:36px; border-radius:16px; display:grid; place-items:center;
     background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.03));
     border:1px solid rgba(255,255,255,.16);
     box-shadow:0 6px 14px rgba(0,0,0,.55), inset 0 2px 3px rgba(255,255,255,.25), inset 0 -3px 6px rgba(0,0,0,.45);
-    transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
-  }
+    transition:transform .2s ease, box-shadow .2s ease, background .2s ease; }
   .tab svg{ width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2.2;
-    stroke-linecap:round; stroke-linejoin:round;
-    filter:drop-shadow(0 2px 2px rgba(0,0,0,.6)); transition:.2s; }
-  .tab:active .caps{ transform:translateY(2px);
-    box-shadow:0 2px 6px rgba(0,0,0,.5), inset 0 2px 4px rgba(0,0,0,.4); }
+    stroke-linecap:round; stroke-linejoin:round; filter:drop-shadow(0 2px 2px rgba(0,0,0,.6)); transition:.2s; }
+  .tab:active .caps{ transform:translateY(2px); box-shadow:0 2px 6px rgba(0,0,0,.5), inset 0 2px 4px rgba(0,0,0,.4); }
   .tab.activa{ color:#fff; }
   .tab.activa .caps{ transform:translateY(-4px); }
   .tab.activa svg{ stroke:#fff; filter:drop-shadow(0 0 7px rgba(255,255,255,.9)); }
@@ -139,14 +158,10 @@
   .tab:nth-child(5).activa .caps{ background:linear-gradient(180deg,#8beeff,var(--cyan));
     box-shadow:0 10px 22px rgba(40,224,255,.45), inset 0 2px 3px rgba(255,255,255,.45), inset 0 -3px 6px rgba(0,0,0,.3); }
 
-  /* ===== BANNER ABAJO ===== */
-  .banner-slot{
-    height:56px; flex-shrink:0;
-    margin:8px 12px calc(8px + env(safe-area-inset-bottom,0px));
-    border:1px dashed rgba(255,255,255,.22); border-radius:14px;
-    display:grid; place-items:center;
-    font-size:10px; font-weight:700; letter-spacing:1px; color:rgba(255,255,255,.35);
-  }
+  .banner-slot{ height:56px; flex-shrink:0; margin:8px 12px calc(8px + env(safe-area-inset-bottom,0px));
+    border:1px dashed rgba(255,255,255,.25); border-radius:14px; display:grid; place-items:center;
+    font-size:10px; font-weight:700; letter-spacing:1px; color:rgba(255,255,255,.4);
+    background:rgba(10,6,18,.5); }
 </style>
 </head>
 <body>
@@ -159,45 +174,58 @@
 
   <div id="app">
     <main>
+      <!-- JUEGO -->
       <section class="page activa" id="p-juego">
-
-        <!-- SLOT SUPERIOR: reproductor ↔ anuncio 30s (mismo lugar) -->
+        <div class="page-shade"></div>
         <div class="game-top">
           <div class="mini-player" id="miniPlayer">
             <div class="mini-cover"></div>
             <div class="mini-info"><b id="songName">Sonando: canción 1</b><span>Mini-reproductor</span></div>
-            <button class="mini-btn" aria-label="Anterior">⏮</button>
-            <button class="mini-btn" aria-label="Play">▶</button>
-            <button class="mini-btn" id="btnNext" aria-label="Siguiente">⏭</button>
+            <button class="mini-btn">⏮</button>
+            <button class="mini-btn">▶</button>
+            <button class="mini-btn" id="btnNext">⏭</button>
           </div>
-
           <div class="ad30-full" id="ad30Full" hidden>
-            <div class="ad30-txt">ANUNCIO 30s<small>La siguiente canción empieza al terminar</small></div>
+            <div class="ad30-txt">ANUNCIO 30s<small>Siguiente canción al terminar</small></div>
             <div class="ad30-count" id="adCount">30</div>
             <button class="ad30-skip" id="adSkip">⏩ saltar (demo)</button>
           </div>
         </div>
+        <div class="game-area">LABERINTO DEL JUEGO<br>(tocando las orillas)</div>
+        <div class="game-bottom"><div class="joy-slot">PALANCA<br>(4 direcciones)</div></div>
+      </section>
 
-        <!-- LABERINTO a lo ancho completo -->
-        <div class="game-area">LABERINTO DEL JUEGO<br>(tocando las orillas de lo ancho)</div>
-
-        <!-- PALANCA: cuadrito centrado -->
-        <div class="game-bottom">
-          <div class="joy-slot">PALANCA<br>(4 direcciones)</div>
+      <!-- MÚSICA (cristalina, fondo dinámico) -->
+      <section class="page" id="p-musica">
+        <div class="music-bg" id="musicBg"></div>
+        <div class="music-wrap">
+          <div class="glass-panel">
+            <div class="cover" id="cover"></div>
+            <div class="m-title" id="mTitle">Neon Dreams</div>
+            <div class="m-artist" id="mArtist">Triki Sounds</div>
+            <div class="m-progress"><div class="m-fill"></div></div>
+            <div class="m-times"><span>1:24</span><span>3:56</span></div>
+            <div class="m-controls">
+              <button class="m-btn" id="mPrev">⏮</button>
+              <button class="m-play" id="mPlay">▶</button>
+              <button class="m-btn" id="mNext">⏭</button>
+            </div>
+          </div>
+          <div class="m-list" id="mList"></div>
         </div>
       </section>
 
-      <section class="page" id="p-musica">
-        <div class="placeholder"><div class="ico">🎵</div><h2>MÚSICA</h2><p>Aquí irá el reproductor con Jamendo y la lista de canciones.</p></div>
-      </section>
       <section class="page" id="p-tareas">
-        <div class="placeholder"><div class="ico">✅</div><h2>TAREAS</h2><p>Aquí irán el saldo de monedas, recompensas diarias, anuncios y el botón de invitar. (Pendiente de tu imagen de referencia)</p></div>
+        <div class="page-shade"></div>
+        <div class="placeholder"><div class="ico">✅</div><h2>TAREAS</h2><p>Saldo de monedas, recompensas diarias, botones de anuncio e invitar. (Pendiente de tu imagen de referencia)</p></div>
       </section>
       <section class="page" id="p-top">
-        <div class="placeholder"><div class="ico">🏆</div><h2>TOP</h2><p>Aquí irá la tabla de clasificación en tiempo real.</p></div>
+        <div class="page-shade"></div>
+        <div class="placeholder"><div class="ico">🏆</div><h2>TOP</h2><p>Contador real de monedas y ranking en vivo. (Pendiente de tu imagen de referencia)</p></div>
       </section>
       <section class="page" id="p-billetera">
-        <div class="placeholder"><div class="ico">💳</div><h2>BILLETERA</h2><p>Aquí irá tu saldo y la conexión de wallet para retiros.</p></div>
+        <div class="page-shade"></div>
+        <div class="placeholder"><div class="ico">💳</div><h2>BILLETERA</h2><p>Cuadro para conectar tu wallet y retiros. (Pendiente)</p></div>
       </section>
     </main>
 
@@ -234,35 +262,47 @@
     });
   });
 
-  // --- DEMO del flujo: termina canción → anuncio 30s en el lugar del reproductor → siguiente canción ---
-  const miniPlayer=document.getElementById('miniPlayer');
-  const ad30Full=document.getElementById('ad30Full');
-  const adCount=document.getElementById('adCount');
-  const songName=document.getElementById('songName');
-  let adTimer=null, songNum=1;
+  // --- MÚSICA cristalina con fondo dinámico ---
+  const CANCIONES=[
+    { t:'Neon Dreams', a:'Triki Sounds', c:'linear-gradient(135deg,#ff2e93,#b04dff)' },
+    { t:'Cyber Wave',  a:'Triki Sounds', c:'linear-gradient(135deg,#28e0ff,#0a5bd6)' },
+    { t:'Golden Rush', a:'Triki Sounds', c:'linear-gradient(135deg,#ffd21f,#ff7a00)' },
+    { t:'Toxic Garden',a:'Triki Sounds', c:'linear-gradient(135deg,#3dff7c,#0a8f4e)' }
+  ];
+  let songIdx=0;
+  const musicBg=document.getElementById('musicBg'), cover=document.getElementById('cover');
+  const mTitle=document.getElementById('mTitle'), mArtist=document.getElementById('mArtist');
+  const mList=document.getElementById('mList');
 
-  document.getElementById('btnNext').addEventListener('click',()=>{
-    // En este prototipo, ⏭ simula "terminó la canción" para que veas el flujo.
-    // En la versión real, el anuncio saldrá solo al terminar la canción.
-    miniPlayer.hidden=true;
-    ad30Full.hidden=false;
-    let s=30; adCount.textContent=s;
-    adTimer=setInterval(()=>{
-      s--; adCount.textContent=s;
-      if(s<=0){ clearInterval(adTimer); finAnuncio(); }
-    },1000);
-  });
-
-  document.getElementById('adSkip').addEventListener('click',()=>{
-    clearInterval(adTimer); finAnuncio();
-  });
-
-  function finAnuncio(){
-    ad30Full.hidden=true;
-    miniPlayer.hidden=false;
-    songNum++;
-    songName.textContent='Sonando: canción '+songNum;
+  function pintaLista(){
+    mList.innerHTML='';
+    CANCIONES.forEach((s,i)=>{
+      const d=document.createElement('div'); d.className='m-item';
+      d.innerHTML=`<div class="m-thumb" style="background:${s.c}"></div><div><b>${s.t}</b><span>${s.a}</span></div>`;
+      d.addEventListener('click',()=>setSong(i));
+      mList.appendChild(d);
+    });
   }
+  function setSong(i){
+    songIdx=i; const s=CANCIONES[i];
+    musicBg.style.background=s.c;   // fondo dinámico toma el color de la portada
+    cover.style.background=s.c;     // portada
+    mTitle.textContent=s.t; mArtist.textContent=s.a;
+    document.getElementById('songName').textContent='Sonando: '+s.t;
+  }
+  document.getElementById('mNext').addEventListener('click',()=>setSong((songIdx+1)%CANCIONES.length));
+  document.getElementById('mPrev').addEventListener('click',()=>setSong((songIdx-1+CANCIONES.length)%CANCIONES.length));
+  pintaLista(); setSong(0);
+
+  // --- Demo anuncio 30s en el slot del reproductor del juego ---
+  const miniPlayer=document.getElementById('miniPlayer'), ad30Full=document.getElementById('ad30Full');
+  const adCount=document.getElementById('adCount'); let adTimer=null;
+  document.getElementById('btnNext').addEventListener('click',()=>{
+    miniPlayer.hidden=true; ad30Full.hidden=false; let s=30; adCount.textContent=s;
+    adTimer=setInterval(()=>{ s--; adCount.textContent=s; if(s<=0){ clearInterval(adTimer); finAnuncio(); } },1000);
+  });
+  document.getElementById('adSkip').addEventListener('click',()=>{ clearInterval(adTimer); finAnuncio(); });
+  function finAnuncio(){ ad30Full.hidden=true; miniPlayer.hidden=false; }
 </script>
 </body>
-       </html>
+             </html>
