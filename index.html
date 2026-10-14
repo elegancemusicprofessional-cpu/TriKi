@@ -63,48 +63,64 @@
   .placeholder h2{ font-size:19px; font-weight:900; margin-bottom:8px; }
   .placeholder p{ font-size:13px; color:rgba(255,255,255,.7); line-height:1.5; }
 
-  /* ===== MÚSICA ===== */
-  #p-musica{ background:none; }
-  .music-bg{ position:absolute; inset:-60px; z-index:0;
-    filter:blur(60px) saturate(1.6); opacity:.85; transform:scale(1.2);
-    transition:background .9s ease; }
-  .music-wrap{ position:relative; z-index:1; padding:calc(16px + env(safe-area-inset-top,0px)) 18px 20px; }
+  /* ===== MÚSICA: color/portada en TODA la pantalla ===== */
+  #p-musica{ background:none; transition:background .8s ease; }
+  .music-shade{ position:absolute; inset:0; z-index:0;
+    background:linear-gradient(rgba(5,3,10,.30), rgba(5,3,10,.45)); }
+  .music-full{ position:relative; z-index:1; height:100%;
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px; }
 
-  /* BUSCADOR arriba */
+  .music-topbar{ display:flex; align-items:center; gap:10px; }
+  .icon-round{ width:40px; height:40px; border-radius:50%; border:none; cursor:pointer;
+    background:rgba(255,255,255,.16); backdrop-filter:blur(12px); color:#fff; font-size:17px;
+    display:grid; place-items:center; box-shadow:0 6px 16px rgba(0,0,0,.35); }
+  .music-titlebox{ flex:1; text-align:center; min-width:0; }
+  .music-titlebox b{ display:block; font-size:17px; font-weight:900;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .music-titlebox span{ font-size:12px; color:rgba(255,255,255,.75); }
+
+  /* slot del anuncio 30s (aparece al terminar canción) */
+  .music-ad{ margin-top:10px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:8px 12px; border-radius:14px;
+    background:rgba(10,6,18,.6); backdrop-filter:blur(12px);
+    border:1px solid rgba(255,46,147,.55); }
+  .music-ad[hidden]{ display:none; }
+  .music-ad .t{ font-size:11px; font-weight:800; }
+  .music-ad .t small{ display:block; font-size:9px; font-weight:600; color:rgba(255,255,255,.7); }
+  .music-ad .c{ font-size:20px; font-weight:900; color:var(--amarillo); }
+  .music-ad .x{ border:none; background:rgba(255,255,255,.14); color:#fff; font-size:9px; font-weight:700;
+    padding:6px 8px; border-radius:8px; cursor:pointer; }
+
+  .music-center{ display:flex; flex-direction:column; align-items:center; gap:14px; padding-bottom:6px; }
+  .m-progress{ width:88%; height:5px; background:rgba(255,255,255,.25); border-radius:100px; overflow:hidden; }
+  .m-fill{ height:100%; width:35%; border-radius:100px; background:#fff; }
+  .m-times{ width:88%; display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,.8); margin-top:-8px; }
+  .m-controls{ display:flex; align-items:center; justify-content:center; gap:30px; }
+  .m-btn{ border:none; background:none; color:#fff; font-size:22px; cursor:pointer;
+    text-shadow:0 2px 8px rgba(0,0,0,.5); }
+  .m-play{ width:68px; height:68px; border-radius:50%; border:none; color:#fff; font-size:24px; cursor:pointer;
+    background:rgba(255,255,255,.2); backdrop-filter:blur(14px);
+    box-shadow:0 12px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.4); }
+
+  /* panel de colores (oculto, se abre con 🎨) */
+  .color-panel{ position:absolute; left:14px; right:14px; bottom:14px; z-index:6;
+    background:rgba(10,6,18,.85); backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.2); border-radius:20px; padding:14px;
+    box-shadow:0 20px 50px rgba(0,0,0,.5); }
+  .color-panel[hidden]{ display:none; }
   .music-search{ display:flex; gap:8px; margin-bottom:12px; }
-  .music-search input{ flex:1; padding:11px 16px; border-radius:100px;
-    border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.1);
-    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  .music-search input{ flex:1; padding:10px 14px; border-radius:100px;
+    border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.08);
     color:#fff; font-size:13px; font-family:inherit; outline:none; }
   .music-search input::placeholder{ color:rgba(255,255,255,.5); }
-  .music-search button{ width:42px; border-radius:50%; border:none; cursor:pointer;
-    background:rgba(255,255,255,.14); backdrop-filter:blur(12px); color:#fff; font-size:15px; }
-
-  .glass-panel{ backdrop-filter:blur(22px) saturate(1.4); -webkit-backdrop-filter:blur(22px) saturate(1.4);
-    background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.22);
-    border-radius:26px; padding:20px; text-align:center;
-    box-shadow:0 20px 50px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.25); }
-  .cover{ width:170px; height:170px; border-radius:18px; margin:0 auto 16px;
-    box-shadow:0 14px 34px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.3);
-    transition:background .9s ease; }
-  .m-title{ font-size:19px; font-weight:900; }
-  .m-artist{ font-size:13px; color:rgba(255,255,255,.65); margin-top:3px; }
-  .m-progress{ height:5px; background:rgba(255,255,255,.18); border-radius:100px; margin:16px 0 6px; overflow:hidden; }
-  .m-fill{ height:100%; width:35%; border-radius:100px; background:rgba(255,255,255,.9); }
-  .m-times{ display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,.6); }
-  .m-controls{ display:flex; align-items:center; justify-content:center; gap:26px; margin-top:16px; }
-  .m-btn{ border:none; background:none; color:#fff; font-size:20px; cursor:pointer; opacity:.85; }
-  .m-play{ width:62px; height:62px; border-radius:50%; border:none; color:#fff; font-size:22px; cursor:pointer;
-    background:rgba(255,255,255,.16); backdrop-filter:blur(10px);
-    box-shadow:0 10px 26px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.35); }
-
-  /* LISTA de canciones: cuadritos MÁS PEQUEÑOS (antes 42px, ahora 32px) */
-  .m-list{ margin-top:16px; display:flex; flex-direction:column; gap:6px; }
-  .m-item{ display:flex; align-items:center; gap:10px; padding:8px; border-radius:12px; cursor:pointer;
-    background:rgba(255,255,255,.07); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.12); }
-  .m-thumb{ width:32px; height:32px; border-radius:8px; flex-shrink:0; }
-  .m-item b{ font-size:12px; display:block; }
-  .m-item span{ font-size:10px; color:rgba(255,255,255,.6); }
+  .music-search button{ width:40px; border-radius:50%; border:none; cursor:pointer;
+    background:rgba(255,255,255,.14); color:#fff; font-size:14px; }
+  .color-list{ display:flex; flex-wrap:wrap; gap:10px; max-height:150px; overflow-y:auto; }
+  .color-list::-webkit-scrollbar{ display:none; }
+  .color-dot{ width:40px; height:40px; border-radius:12px; cursor:pointer;
+    border:2px solid transparent; box-shadow:0 4px 12px rgba(0,0,0,.4); }
+  .color-dot.sel{ border-color:#fff; box-shadow:0 0 12px rgba(255,255,255,.7); }
 
   /* ===== LAYOUT JUEGO ===== */
   #p-juego.activa{ display:flex; flex-direction:column; gap:8px;
@@ -204,21 +220,24 @@
         <div class="game-bottom"><div class="joy-slot">PALANCA<br>(4 direcciones)</div></div>
       </section>
 
-      <!-- MÚSICA -->
+      <!-- MÚSICA: color a pantalla completa + reproductor limpio -->
       <section class="page" id="p-musica">
-        <div class="music-bg" id="musicBg"></div>
-        <div class="music-wrap">
+        <div class="music-shade"></div>
+        <div class="music-full">
 
-          <!-- BUSCADOR (nuevo) -->
-          <div class="music-search">
-            <input id="searchInput" type="text" placeholder="Buscar música...">
-            <button id="searchBtn" aria-label="Buscar">🔍</button>
+          <div class="music-topbar">
+            <button class="icon-round" id="paletteBtn" aria-label="Colores">🎨</button>
+            <div class="music-titlebox"><b id="mTitle">Neon Dreams</b><span id="mArtist">Triki Sounds</span></div>
+            <button class="icon-round" id="demoFinBtn" aria-label="Simular fin de canción">📺</button>
           </div>
 
-          <div class="glass-panel">
-            <div class="cover" id="cover"></div>
-            <div class="m-title" id="mTitle">Neon Dreams</div>
-            <div class="m-artist" id="mArtist">Triki Sounds</div>
+          <div class="music-ad" id="musicAd" hidden>
+            <div class="t">ANUNCIO 30s<small>Siguiente canción al terminar</small></div>
+            <div class="c" id="musicAdCount">30</div>
+            <button class="x" id="musicAdSkip">⏩ saltar (demo)</button>
+          </div>
+
+          <div class="music-center">
             <div class="m-progress"><div class="m-fill"></div></div>
             <div class="m-times"><span>1:24</span><span>3:56</span></div>
             <div class="m-controls">
@@ -227,7 +246,15 @@
               <button class="m-btn" id="mNext">⏭</button>
             </div>
           </div>
-          <div class="m-list" id="mList"></div>
+        </div>
+
+        <!-- panel de colores (oculto) -->
+        <div class="color-panel" id="colorPanel" hidden>
+          <div class="music-search">
+            <input id="searchInput" type="text" placeholder="Buscar canción...">
+            <button id="searchBtn" aria-label="Buscar">🔍</button>
+          </div>
+          <div class="color-list" id="colorList"></div>
         </div>
       </section>
 
@@ -278,7 +305,7 @@
     });
   });
 
-  // --- MÚSICA (8 canciones, cuadritos pequeños, buscador) ---
+  // --- MÚSICA: color en TODA la pantalla + panel de colores ---
   const CANCIONES=[
     { t:'Neon Dreams',   a:'Triki Sounds',  c:'linear-gradient(135deg,#ff2e93,#b04dff)' },
     { t:'Cyber Wave',    a:'Triki Sounds',  c:'linear-gradient(135deg,#28e0ff,#0a5bd6)' },
@@ -290,42 +317,54 @@
     { t:'Neon Jungle',   a:'Triki Sounds',  c:'linear-gradient(135deg,#ffd21f,#3dff7c)' }
   ];
   let songIdx=0;
-  const musicBg=document.getElementById('musicBg'), cover=document.getElementById('cover');
+  const pMusica=document.getElementById('p-musica');
   const mTitle=document.getElementById('mTitle'), mArtist=document.getElementById('mArtist');
-  const mList=document.getElementById('mList');
+  const colorPanel=document.getElementById('colorPanel'), colorList=document.getElementById('colorList');
 
-  function pintaLista(lista){
-    mList.innerHTML='';
+  function pintaColores(lista){
+    colorList.innerHTML='';
     lista.forEach((s)=>{
       const realIdx=CANCIONES.indexOf(s);
-      const d=document.createElement('div'); d.className='m-item';
-      d.innerHTML=`<div class="m-thumb" style="background:${s.c}"></div><div><b>${s.t}</b><span>${s.a}</span></div>`;
-      d.addEventListener('click',()=>setSong(realIdx));
-      mList.appendChild(d);
+      const d=document.createElement('div');
+      d.className='color-dot'+(realIdx===songIdx?' sel':'');
+      d.style.background=s.c; d.title=s.t;
+      d.addEventListener('click',()=>{ setSong(realIdx); });
+      colorList.appendChild(d);
     });
   }
   function setSong(i){
     songIdx=i; const s=CANCIONES[i];
-    musicBg.style.background=s.c;   // fondo DINÁMICO de toda la pantalla
-    cover.style.background=s.c;     // portada
+    pMusica.style.background=s.c;   // color/portada en TODA la pantalla
     mTitle.textContent=s.t; mArtist.textContent=s.a;
     document.getElementById('songName').textContent='Sonando: '+s.t;
+    pintaColores(CANCIONES);
   }
+  document.getElementById('paletteBtn').addEventListener('click',()=>{
+    colorPanel.hidden=!colorPanel.hidden;
+  });
   document.getElementById('mNext').addEventListener('click',()=>setSong((songIdx+1)%CANCIONES.length));
   document.getElementById('mPrev').addEventListener('click',()=>setSong((songIdx-1+CANCIONES.length)%CANCIONES.length));
 
-  // Buscador filtra la lista en tiempo real
   function buscar(){
     const q=document.getElementById('searchInput').value.toLowerCase().trim();
     const lista=q? CANCIONES.filter(s=>s.t.toLowerCase().includes(q)) : CANCIONES;
-    pintaLista(lista);
+    pintaColores(lista);
   }
   document.getElementById('searchBtn').addEventListener('click',buscar);
   document.getElementById('searchInput').addEventListener('input',buscar);
 
-  pintaLista(CANCIONES); setSong(0);
+  setSong(0);
 
-  // --- Demo anuncio 30s en el slot del reproductor del juego ---
+  // --- Demo anuncio 30s en MÚSICA (botón 📺 simula "terminó la canción") ---
+  const musicAd=document.getElementById('musicAd'), musicAdCount=document.getElementById('musicAdCount');
+  let mAdTimer=null;
+  document.getElementById('demoFinBtn').addEventListener('click',()=>{
+    musicAd.hidden=false; let s=30; musicAdCount.textContent=s;
+    mAdTimer=setInterval(()=>{ s--; musicAdCount.textContent=s; if(s<=0){ clearInterval(mAdTimer); musicAd.hidden=true; } },1000);
+  });
+  document.getElementById('musicAdSkip').addEventListener('click',()=>{ clearInterval(mAdTimer); musicAd.hidden=true; });
+
+  // --- Demo anuncio 30s en el slot del reproductor del JUEGO ---
   const miniPlayer=document.getElementById('miniPlayer'), ad30Full=document.getElementById('ad30Full');
   const adCount=document.getElementById('adCount'); let adTimer=null;
   document.getElementById('btnNext').addEventListener('click',()=>{
@@ -336,4 +375,4 @@
   function finAnuncio(){ ad30Full.hidden=true; miniPlayer.hidden=false; }
 </script>
 </body>
-                                                                         </html>
+ </html>
