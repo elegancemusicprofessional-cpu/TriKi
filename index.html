@@ -52,6 +52,7 @@
   #p-billetera{ background-image:url('FondoBilletera.jpg'); }
   .page-shade{ position:absolute; inset:0; background:rgba(5,3,10,.55); z-index:0; }
   #p-tareas .page-shade{ background:linear-gradient(rgba(5,3,10,.30), rgba(5,3,10,.55)); }
+  #p-top .page-shade{ background:linear-gradient(rgba(5,3,10,.35), rgba(5,3,10,.6)); }
   .page > *:not(.page-shade){ position:relative; z-index:1; }
 
   .placeholder{ margin:calc(60px + env(safe-area-inset-top,0px)) 20px 20px; padding:40px 24px; text-align:center;
@@ -116,16 +117,14 @@
   .tareas-wrap{ position:relative; z-index:1; display:flex; flex-direction:column; gap:12px;
     padding:calc(12px + env(safe-area-inset-top,0px)) 8% 130px; }
   .t-header{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-  .t-coin{ display:flex; align-items:center; gap:7px; font-size:15px; font-weight:900;
-    text-shadow:0 2px 6px rgba(0,0,0,.7); }
+  .t-coin{ display:flex; align-items:center; gap:7px; font-size:15px; font-weight:900; text-shadow:0 2px 6px rgba(0,0,0,.7); }
   .t-coin .tc{ width:24px; height:24px; border-radius:50%;
     background:radial-gradient(circle at 35% 30%, #fff3b0, #ffd21f 45%, #c98a00);
     border:1px solid #a8760a; display:grid; place-items:center;
     font-size:9px; font-weight:900; color:#7a5200; box-shadow:0 0 10px rgba(255,210,31,.6); }
   .t-balance{ min-width:74px; padding:8px 12px; border-radius:12px;
     background:rgba(10,6,18,.65); backdrop-filter:blur(10px);
-    border:1px solid rgba(255,255,255,.22); font-size:15px; font-weight:900;
-    color:var(--amarillo); text-align:right; }
+    border:1px solid rgba(255,255,255,.22); font-size:15px; font-weight:900; color:var(--amarillo); text-align:right; }
   .t-tabs{ display:flex; gap:6px; }
   .t-tab{ flex:1; padding:10px 0; border-radius:12px; border:1px solid rgba(255,255,255,.18);
     background:rgba(255,255,255,.07); backdrop-filter:blur(10px);
@@ -168,6 +167,49 @@
   .invite-table::-webkit-scrollbar{ display:none; }
   .inv-row{ display:flex; justify-content:space-between; padding:8px 10px; border-radius:10px;
     background:rgba(255,255,255,.06); font-size:11px; }
+
+  /* ===== TOP ===== */
+  .top-wrap{ position:relative; z-index:1; display:flex; flex-direction:column; gap:14px;
+    padding:calc(12px + env(safe-area-inset-top,0px)) 4% 130px; }
+  .top-title{ display:flex; align-items:center; gap:8px; font-size:16px; font-weight:900;
+    text-shadow:0 2px 6px rgba(0,0,0,.7); }
+  .top-title .tc{ width:24px; height:24px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff3b0, #ffd21f 45%, #c98a00);
+    border:1px solid #a8760a; display:grid; place-items:center;
+    font-size:9px; font-weight:900; color:#7a5200; box-shadow:0 0 10px rgba(255,210,31,.6); }
+  .podio{ display:flex; align-items:flex-end; justify-content:center; gap:8px; }
+  .pod{ flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; }
+  .pod .badge{ width:32px; height:32px; filter:drop-shadow(0 4px 8px rgba(0,0,0,.5)); }
+  .pod .avatar{ border-radius:50%; display:grid; place-items:center; font-weight:900; color:#fff;
+    background:rgba(255,255,255,.12); backdrop-filter:blur(8px); }
+  .pod1 .avatar{ width:70px; height:70px; font-size:26px; border:3px solid #ffd21f; box-shadow:0 0 20px rgba(255,210,31,.6); }
+  .pod2 .avatar{ width:56px; height:56px; font-size:20px; border:3px solid #c0c0d0; box-shadow:0 0 14px rgba(192,192,208,.5); }
+  .pod3 .avatar{ width:56px; height:56px; font-size:20px; border:3px solid #cd7f32; box-shadow:0 0 14px rgba(205,127,50,.5); }
+  .pod .pname{ font-size:11px; font-weight:800; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pod .pcoins{ font-size:11px; font-weight:900; color:var(--amarillo); }
+  .pod .base{ width:100%; border-radius:10px 10px 0 0; }
+  .pod1 .base{ height:74px; background:linear-gradient(180deg,#ffd21f,#b8860b); box-shadow:0 0 20px rgba(255,210,31,.4); }
+  .pod2 .base{ height:52px; background:linear-gradient(180deg,#e0e0ea,#8a8aa0); }
+  .pod3 .base{ height:40px; background:linear-gradient(180deg,#cd7f32,#7a4a1d); }
+  .top-list{ display:flex; flex-direction:column; gap:6px; }
+  .top-row{ display:flex; align-items:center; gap:10px; padding:10px; border-radius:14px;
+    background:rgba(10,6,18,.65); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.12); }
+  .top-row.mi{ border-color:var(--morado); box-shadow:0 0 14px rgba(176,77,255,.4); }
+  .top-row .pos{ width:26px; text-align:center; font-weight:900; color:rgba(255,255,255,.7); font-size:13px; flex-shrink:0; }
+  .top-row .ava{ width:38px; height:38px; border-radius:50%; flex-shrink:0;
+    display:grid; place-items:center; font-weight:900; color:#fff; background:rgba(255,255,255,.14); }
+  .top-row .who{ flex:1; min-width:0; }
+  .top-row .who b{ display:block; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .top-row .who span{ font-size:10px; color:rgba(255,255,255,.55); }
+  .top-row .full{ font-size:10px; font-weight:800; color:var(--amarillo);
+    word-break:break-all; text-align:right; max-width:42%; line-height:1.3; }
+  .my-rank{ position:sticky; bottom:8px; display:flex; align-items:center; gap:10px; padding:12px 14px;
+    border-radius:16px; cursor:pointer;
+    background:linear-gradient(135deg, rgba(176,77,255,.92), rgba(255,46,147,.92));
+    box-shadow:0 10px 26px rgba(176,77,255,.5); }
+  .my-rank .pos{ font-size:17px; font-weight:900; }
+  .my-rank .lbl{ flex:1; font-size:12px; font-weight:800; }
+  .my-rank .full{ font-size:10px; font-weight:800; word-break:break-all; text-align:right; max-width:50%; }
 
   /* ===== JUEGO ===== */
   #p-juego.activa{ display:flex; flex-direction:column; gap:8px;
@@ -257,6 +299,9 @@
   <linearGradient id="gBag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd76a"/><stop offset="1" stop-color="#b8860b"/></linearGradient>
   <linearGradient id="gYT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a5a"/><stop offset="1" stop-color="#c40000"/></linearGradient>
   <linearGradient id="gSP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#25d366"/><stop offset="1" stop-color="#0e7a35"/></linearGradient>
+  <radialGradient id="gOro" cx="35%" cy="30%"><stop offset="0" stop-color="#fff3b0"/><stop offset=".5" stop-color="#ffd21f"/><stop offset="1" stop-color="#b8860b"/></radialGradient>
+  <radialGradient id="gPlata" cx="35%" cy="30%"><stop offset="0" stop-color="#f5f5fa"/><stop offset=".5" stop-color="#c0c0d0"/><stop offset="1" stop-color="#7a7a90"/></radialGradient>
+  <radialGradient id="gBronce" cx="35%" cy="30%"><stop offset="0" stop-color="#e8a06a"/><stop offset=".5" stop-color="#cd7f32"/><stop offset="1" stop-color="#7a4a1d"/></radialGradient>
 </defs></svg>
 
   <div id="splash">
@@ -340,18 +385,15 @@
       <section class="page" id="p-tareas">
         <div class="page-shade"></div>
         <div class="tareas-wrap">
-
           <div class="t-header">
             <div class="t-coin"><span class="tc">TC</span>TrikiCoin</div>
             <div class="t-balance" id="tBalance">0</div>
           </div>
-
           <div class="t-tabs">
             <button class="t-tab activa" data-t="t1">Diarias</button>
             <button class="t-tab" data-t="t2">Creador</button>
             <button class="t-tab" data-t="t3">Invitados</button>
           </div>
-
           <div class="t-page activa" id="t1">
             <div class="daily-card">
               <div class="daily-title">Recompensa diaria</div>
@@ -369,7 +411,6 @@
               </button>
             </div>
           </div>
-
           <div class="t-page" id="t2">
             <div class="task-grid">
               <button class="task-card task-creator">
@@ -390,7 +431,6 @@
               </button>
             </div>
           </div>
-
           <div class="t-page" id="t3">
             <div class="invite-card">
               <div class="invite-code" id="inviteCode">TRIKI-0000</div>
@@ -399,14 +439,24 @@
               <div class="invite-table" id="inviteTable"></div>
             </div>
           </div>
-
         </div>
       </section>
 
+      <!-- TOP -->
       <section class="page" id="p-top">
         <div class="page-shade"></div>
-        <div class="placeholder"><div class="ico">🏆</div><h2>TOP</h2><p>Contador real y ranking en vivo. (Pendiente de tu imagen)</p></div>
+        <div class="top-wrap">
+          <div class="top-title"><span class="tc">TC</span>Clasificación</div>
+          <div class="podio">
+            <div class="pod pod2" id="pod2"></div>
+            <div class="pod pod1" id="pod1"></div>
+            <div class="pod pod3" id="pod3"></div>
+          </div>
+          <div class="top-list" id="topList"></div>
+          <div class="my-rank" id="myRank"></div>
+        </div>
       </section>
+
       <section class="page" id="p-billetera">
         <div class="page-shade"></div>
         <div class="placeholder"><div class="ico">💳</div><h2>BILLETERA</h2><p>Conectar wallet y retiros. (Pendiente)</p></div>
@@ -447,5 +497,6 @@
 <script src="js/juego.js"></script>
 <script src="js/musica.js"></script>
 <script src="js/tareas.js"></script>
+<script src="js/top.js"></script>
 </body>
-           </html>
+   </html>
