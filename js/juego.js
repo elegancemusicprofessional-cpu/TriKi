@@ -1,9 +1,10 @@
-/* ============ TRIKI - MOTOR DEL JUEGO v7 ============ */
+/* ============ TRIKI - MOTOR DEL JUEGO v8 ============ */
 (function(){
   const canvas=document.getElementById('gameCanvas');
   const ctx=canvas.getContext('2d');
   const area=document.getElementById('gameArea');
   const navEl=document.querySelector('nav');
+  const gameBottom=document.querySelector('.game-bottom');
 
   const COLS=15, ROWS=21;
   let cell=0, offX=0, offY=0;
@@ -87,32 +88,32 @@
   }
   function updateSkill(){ const el=document.getElementById('skillCount'); if(el) el.textContent=skill; }
 
-  /* ===== D-PAD CIRCULAR CON COLORES ===== */
+  /* ===== D-PAD CUADRADO GRANDE, BOTONES SEPARADOS ===== */
   const styleDpad=document.createElement('style');
   styleDpad.textContent=`
-    .dpad{ position:relative; width:132px; height:132px; border-radius:50%;
+    .dpad{ position:relative; width:172px; height:172px; border-radius:30px;
       background:rgba(10,6,18,.55); backdrop-filter:blur(10px);
       border:1px solid rgba(255,255,255,.2);
       box-shadow:0 6px 16px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.15); }
-    .dbtn{ position:absolute; width:46px; height:46px; border-radius:50%; border:none;
-      font-size:15px; font-weight:900; display:grid; place-items:center; cursor:pointer;
+    .dbtn{ position:absolute; width:60px; height:60px; border-radius:20px; border:none;
+      font-size:20px; font-weight:900; display:grid; place-items:center; cursor:pointer;
       touch-action:none; user-select:none; -webkit-user-select:none;
       transition:transform .08s ease; }
     .dbtn:active{ transform:scale(.92); filter:brightness(1.2); }
-    .dup{ top:5px; left:50%; margin-left:-23px;
+    .dup{ top:10px; left:50%; margin-left:-30px;
       background:linear-gradient(180deg,#ff7ab8,#ff2e93); color:#fff;
       box-shadow:0 4px 14px rgba(255,46,147,.55), inset 0 1px 0 rgba(255,255,255,.45); }
-    .dleft{ left:5px; top:50%; margin-top:-23px;
+    .dleft{ left:10px; top:50%; margin-top:-30px;
       background:linear-gradient(180deg,#8beeff,#28e0ff); color:#06323a;
       box-shadow:0 4px 14px rgba(40,224,255,.55), inset 0 1px 0 rgba(255,255,255,.45); }
-    .dright{ right:5px; top:50%; margin-top:-23px;
+    .dright{ right:10px; top:50%; margin-top:-30px;
       background:linear-gradient(180deg,#8bffab,#3dff7c); color:#0a3d1c;
       box-shadow:0 4px 14px rgba(61,255,124,.55), inset 0 1px 0 rgba(255,255,255,.45); }
-    .ddown{ bottom:5px; left:50%; margin-left:-23px;
+    .ddown{ bottom:10px; left:50%; margin-left:-30px;
       background:linear-gradient(180deg,#ffe37a,#ffd21f); color:#5a3d00;
       box-shadow:0 4px 14px rgba(255,210,31,.55), inset 0 1px 0 rgba(255,255,255,.45); }
-    .dcenter{ position:absolute; left:50%; top:50%; width:32px; height:32px; margin:-16px 0 0 -16px;
-      border-radius:50%; background:rgba(255,255,255,.08); }
+    .dcenter{ position:absolute; left:50%; top:50%; width:40px; height:40px; margin:-20px 0 0 -20px;
+      border-radius:12px; background:rgba(255,255,255,.08); }
   `;
   document.head.appendChild(styleDpad);
 
@@ -126,6 +127,13 @@
     '<button class="dbtn ddown" data-dir="down">▼</button>'+
     '<div class="dcenter"></div>';
   joyZone.replaceWith(dpad);
+
+  // separación extra del banner y botones laterales MÁS ARRIBA
+  gameBottom.style.paddingBottom='16px';
+  const pauseBtn=document.getElementById('pauseBtn');
+  const skillBtn=document.getElementById('skillBtn');
+  pauseBtn.style.alignSelf='flex-start';
+  skillBtn.style.alignSelf='flex-start';
 
   let inputDir=null;
   dpad.querySelectorAll('.dbtn').forEach(b=>{
@@ -163,7 +171,6 @@
   }
 
   /* ===== BOTÓN DISPARO ===== */
-  const skillBtn=document.getElementById('skillBtn');
   skillBtn.innerHTML=
     '<span style="width:26px;height:26px;border-radius:50%;display:block;'+
     'background:radial-gradient(circle at 35% 30%, #fff3b0, #ffd21f 40%, #ff7a00 75%, #e8332a 100%);'+
@@ -173,11 +180,10 @@
   function disparar(){
     if(!started||paused||gameOver) return;
     if(skill<=0) return;
-    // elige un zombie LIBRE (sin otra bolita asignada) => 1 disparo = 1 zombie
     let target=null, best=1e9;
     zombies.forEach(z=>{ if(!z.alive||z.marked) return;
       const d=Math.hypot(z.px-jpx(), z.py-jpy()); if(d<best){ best=d; target=z; } });
-    if(!target) return; // todos ya tienen bolita en camino: no desperdicia disparo
+    if(!target) return;
     target.marked=true;
     skill--; updateSkill();
     bullets.push({ x:jpx(), y:jpy(), target, dx:0, dy:-1, life:2.5 });
@@ -185,18 +191,18 @@
   canvas.addEventListener('pointerdown',()=>{ disparar(); });
   skillBtn.addEventListener('click',()=>{ disparar(); });
 
-  /* ===== BOTONES / GAME OVER ===== */
+  /* ===== GAME OVER SIMPLE (solo 2 opciones cortas) ===== */
   const overOverlay=document.getElementById('overOverlay');
   const restartBtn=document.getElementById('restartBtn');
   const livesAdBtn=document.getElementById('livesAdBtn');
   restartBtn.style.display='';
-  restartBtn.textContent='↻ EMPEZAR DE NUEVO (5 vidas, sin anuncio)';
-  livesAdBtn.textContent='📺 REVIVIR y conservar mis 🪙 (anuncio 30s)';
+  restartBtn.textContent='↻ EMPEZAR DE NUEVO';
+  livesAdBtn.textContent='📺 REVIVIR';
 
   document.getElementById('startBtn').addEventListener('click',()=>{
     started=true; document.getElementById('startOverlay').hidden=true; setNav(false);
   });
-  document.getElementById('pauseBtn').addEventListener('click',()=>{
+  pauseBtn.addEventListener('click',()=>{
     if(!started||gameOver) return;
     paused=!paused;
     document.getElementById('pauseOverlay').hidden=!paused;
@@ -323,7 +329,7 @@
         const dx=b.target.px-b.x, dy=b.target.py-b.y;
         const d=Math.hypot(dx,dy)||1;
         b.dx=dx/d; b.dy=dy/d;
-        if(d<cell*0.6){ // impacto garantizado: 1 disparo = 1 zombie
+        if(d<cell*0.6){
           b.target.alive=false; b.target.marked=false; b.target.respawn=10;
           bullets.splice(i,1); continue;
         }
