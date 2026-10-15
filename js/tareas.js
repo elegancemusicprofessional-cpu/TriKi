@@ -3,7 +3,7 @@
   const $=id=>document.getElementById(id);
   let saldo=0;
 
-  // formato corto: 1k, 5k, 10k, 1M
+  // formato corto: 1k, 10k, 100k, 1M
   const fmtK=n=>{
     if(n>=1e6) return (n/1e6).toFixed(n%1e6?1:0).replace('.0','')+'M';
     if(n>=1000) return (n/1000).toFixed(n%1000?1:0).replace('.0','')+'k';
@@ -56,14 +56,13 @@
     anuncio30(()=>{ sumar(vals[diaIdx]); diaIdx=(diaIdx+1)%7; pintaDias(); });
   });
 
-  // botones de portales de anuncio (+1k)
-  $('adsgramBtn').addEventListener('click',()=>anuncio30(()=>sumar(1000)));
-  $('monetagBtn').addEventListener('click',()=>anuncio30(()=>sumar(1000)));
+  // botones de portales de anuncio (+5k)
+  $('adsgramBtn').addEventListener('click',()=>anuncio30(()=>sumar(5000)));
+  $('monetagBtn').addEventListener('click',()=>anuncio30(()=>sumar(5000)));
 
   // tareas del creador (prototipo: quedan PENDIENTES de verificación)
   document.querySelectorAll('.task-creator').forEach(b=>{
     b.addEventListener('click',()=>{
-      // AQUÍ irán los enlaces reales (config) + verificación después
       b.classList.add('pend');
       b.querySelector('.reward').textContent='PEND.';
     });
@@ -77,7 +76,6 @@
     $('copyBtn').textContent='¡Copiado!';
     setTimeout(()=>{ $('copyBtn').textContent='Copiar código'; },1500);
   });
-  // tablilla demo deslizable
   const tabla=$('inviteTable');
   for(let i=1;i<=3;i++){
     const r=document.createElement('div'); r.className='inv-row';
