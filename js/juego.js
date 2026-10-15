@@ -1,4 +1,4 @@
-/* ============ TRIKI - MOTOR DEL JUEGO v5 ============ */
+/* ============ TRIKI - MOTOR DEL JUEGO v7 ============ */
 (function(){
   const canvas=document.getElementById('gameCanvas');
   const ctx=canvas.getContext('2d');
@@ -44,7 +44,7 @@
   let player, zombies, bullets, coinSet;
 
   const centro=(r,c)=>({ x:offX+c*cell+cell/2, y:offY+r*cell+cell/2 });
-  const nuevaEntidad=(r,c)=>({ r,c, tr:r, tc:c, t:0, moving:false, dir:null, px:0, py:0 });
+  const nuevaEntidad=(r,c)=>({ r,c, tr:r, tc:c, t:0, moving:false, dir:null, px:0, py:0, marked:false });
 
   function regenerarMonedas(){
     coinSet=new Set();
@@ -59,7 +59,7 @@
     let sr=zr, sc=zc;
     outer: for(let r=1;r<ROWS-1;r++){ for(let c=1;c<COLS-1;c++){ if(grid[r][c]===0&&Math.abs(r-zr)+Math.abs(c-zc)<4){ sr=r; sc=c; break outer; } } }
     const cols=['#3dff7c','#b04dff','#28e0ff','#ff2e93'];
-    for(let i=0;i<4;i++) zombies.push(Object.assign(nuevaEntidad(sr,sc),{ color:cols[i], alive:true, respawn:0 }));
+    for(let i=0;i<4;i++) zombies.push(Object.assign(nuevaEntidad(sr,sc),{ color:cols[i], alive:true, respawn:0, marked:false }));
   }
   function colocarJugador(){ player={ gx:1.5, gy:1.5, dir:'right' }; }
   const jpx=()=> offX+player.gx*cell;
@@ -80,12 +80,6 @@
     lives=5; coins=0; skill=5; gameOver=false; invuln=1.5;
     updateHud(); updateSkill();
   }
-  function nuevaPartida(){
-    resize();
-    genMaze(); colocarJugador(); colocarZombies(); regenerarMonedas(); bullets=[];
-    lives=5; skill=5; gameOver=false; invuln=1.5;
-    updateHud(); updateSkill();
-  }
 
   function updateHud(){
     document.getElementById('hudLives').textContent='❤️ '+lives;
@@ -93,34 +87,56 @@
   }
   function updateSkill(){ const el=document.getElementById('skillCount'); if(el) el.textContent=skill; }
 
-  /* ===== JOYSTICK (más grande, vía JS) ===== */
-  const joyZone=document.getElementById('joyZone'), joyKnob=document.getElementById('joyKnob');
-  joyZone.style.width='150px'; joyZone.style.height='104px';
-  joyKnob.style.width='46px'; joyKnob.style.height='46px'; joyKnob.style.margin='-23px 0 0 -23px';
+  /* ===== D-PAD CIRCULAR CON COLORES ===== */
+  const styleDpad=document.createElement('style');
+  styleDpad.textContent=`
+    .dpad{ position:relative; width:132px; height:132px; border-radius:50%;
+      background:rgba(10,6,18,.55); backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,.2);
+      box-shadow:0 6px 16px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.15); }
+    .dbtn{ position:absolute; width:46px; height:46px; border-radius:50%; border:none;
+      font-size:15px; font-weight:900; display:grid; place-items:center; cursor:pointer;
+      touch-action:none; user-select:none; -webkit-user-select:none;
+      transition:transform .08s ease; }
+    .dbtn:active{ transform:scale(.92); filter:brightness(1.2); }
+    .dup{ top:5px; left:50%; margin-left:-23px;
+      background:linear-gradient(180deg,#ff7ab8,#ff2e93); color:#fff;
+      box-shadow:0 4px 14px rgba(255,46,147,.55), inset 0 1px 0 rgba(255,255,255,.45); }
+    .dleft{ left:5px; top:50%; margin-top:-23px;
+      background:linear-gradient(180deg,#8beeff,#28e0ff); color:#06323a;
+      box-shadow:0 4px 14px rgba(40,224,255,.55), inset 0 1px 0 rgba(255,255,255,.45); }
+    .dright{ right:5px; top:50%; margin-top:-23px;
+      background:linear-gradient(180deg,#8bffab,#3dff7c); color:#0a3d1c;
+      box-shadow:0 4px 14px rgba(61,255,124,.55), inset 0 1px 0 rgba(255,255,255,.45); }
+    .ddown{ bottom:5px; left:50%; margin-left:-23px;
+      background:linear-gradient(180deg,#ffe37a,#ffd21f); color:#5a3d00;
+      box-shadow:0 4px 14px rgba(255,210,31,.55), inset 0 1px 0 rgba(255,255,255,.45); }
+    .dcenter{ position:absolute; left:50%; top:50%; width:32px; height:32px; margin:-16px 0 0 -16px;
+      border-radius:50%; background:rgba(255,255,255,.08); }
+  `;
+  document.head.appendChild(styleDpad);
 
-  let inputDir=null, touching=false;
-  function dirPorAngulo(dx,dy){
-    const a=Math.atan2(dy,dx)*180/Math.PI;
-    if(a>=-45&&a<45) return 'right';
-    if(a>=45&&a<135) return 'down';
-    if(a>=-135&&a<-45) return 'up';
-    return 'left';
-  }
-  function moverKnob(dx,dy){
-    const max=30, len=Math.hypot(dx,dy)||1, k=Math.min(len,max)/len;
-    joyKnob.style.transform='translate('+(dx*k)+'px,'+(dy*k)+'px)';
-  }
-  function handleJoy(e){
-    const r=joyZone.getBoundingClientRect();
-    const dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height/2);
-    moverKnob(dx,dy);
-    if(Math.hypot(dx,dy)>6) inputDir=dirPorAngulo(dx,dy);
-  }
-  joyZone.addEventListener('pointerdown',e=>{ touching=true; joyZone.setPointerCapture(e.pointerId); handleJoy(e); e.preventDefault(); });
-  joyZone.addEventListener('pointermove',e=>{ if(touching) handleJoy(e); });
-  function soltar(){ touching=false; inputDir=null; joyKnob.style.transform='translate(0,0)'; }
-  joyZone.addEventListener('pointerup',soltar);
-  joyZone.addEventListener('pointercancel',soltar);
+  const joyZone=document.getElementById('joyZone');
+  const dpad=document.createElement('div');
+  dpad.className='dpad';
+  dpad.innerHTML=
+    '<button class="dbtn dup" data-dir="up">▲</button>'+
+    '<button class="dbtn dleft" data-dir="left">◀</button>'+
+    '<button class="dbtn dright" data-dir="right">▶</button>'+
+    '<button class="dbtn ddown" data-dir="down">▼</button>'+
+    '<div class="dcenter"></div>';
+  joyZone.replaceWith(dpad);
+
+  let inputDir=null;
+  dpad.querySelectorAll('.dbtn').forEach(b=>{
+    const dir=b.dataset.dir;
+    const on=e=>{ inputDir=dir; e.preventDefault(); };
+    const off=()=>{ if(inputDir===dir) inputDir=null; };
+    b.addEventListener('pointerdown',on);
+    b.addEventListener('pointerup',off);
+    b.addEventListener('pointercancel',off);
+    b.addEventListener('pointerleave',off);
+  });
   window.addEventListener('keydown',e=>{
     const k=e.key;
     if(k==='ArrowRight'||k==='d') inputDir='right';
@@ -145,20 +161,8 @@
       if(s<=0){ clearInterval(t); ov.remove(); usandoAnuncio=false; callback(); }
     },1000);
   }
-  function mostrarConfirmAnuncio(onSi){
-    paused=true;
-    const ov=document.createElement('div');
-    ov.className='game-overlay'; ov.style.position='fixed'; ov.style.zIndex=200;
-    ov.innerHTML=
-      '<div class="ov-title" style="font-size:18px">¿Quieres 5 bolitas de fuego más?</div>'+
-      '<button class="ov-btn" id="cfSi">📺 SÍ, VER ANUNCIO (30s)</button>'+
-      '<button class="ov-btn sec" id="cfNo">NO, GRACIAS</button>';
-    document.body.appendChild(ov);
-    ov.querySelector('#cfSi').addEventListener('click',()=>{ ov.remove(); mostrarAnuncioDemo(()=>{ onSi(); paused=false; }); });
-    ov.querySelector('#cfNo').addEventListener('click',()=>{ ov.remove(); paused=false; });
-  }
 
-  /* ===== BOTÓN DISPARO: bola de fuego 3D (no emoji) ===== */
+  /* ===== BOTÓN DISPARO ===== */
   const skillBtn=document.getElementById('skillBtn');
   skillBtn.innerHTML=
     '<span style="width:26px;height:26px;border-radius:50%;display:block;'+
@@ -168,19 +172,27 @@
 
   function disparar(){
     if(!started||paused||gameOver) return;
-    if(skill<=0){ mostrarConfirmAnuncio(()=>{ skill=5; updateSkill(); }); return; }
-    skill--; updateSkill();
+    if(skill<=0) return;
+    // elige un zombie LIBRE (sin otra bolita asignada) => 1 disparo = 1 zombie
     let target=null, best=1e9;
-    zombies.forEach(z=>{ if(!z.alive) return;
+    zombies.forEach(z=>{ if(!z.alive||z.marked) return;
       const d=Math.hypot(z.px-jpx(), z.py-jpy()); if(d<best){ best=d; target=z; } });
+    if(!target) return; // todos ya tienen bolita en camino: no desperdicia disparo
+    target.marked=true;
+    skill--; updateSkill();
     bullets.push({ x:jpx(), y:jpy(), target, dx:0, dy:-1, life:2.5 });
   }
   canvas.addEventListener('pointerdown',()=>{ disparar(); });
   skillBtn.addEventListener('click',()=>{ disparar(); });
 
-  /* ===== BOTONES ===== */
-  document.getElementById('restartBtn').style.display='none';
-  document.getElementById('livesAdBtn').textContent='📺 VER ANUNCIO (30s) Y JUGAR DE NUEVO';
+  /* ===== BOTONES / GAME OVER ===== */
+  const overOverlay=document.getElementById('overOverlay');
+  const restartBtn=document.getElementById('restartBtn');
+  const livesAdBtn=document.getElementById('livesAdBtn');
+  restartBtn.style.display='';
+  restartBtn.textContent='↻ EMPEZAR DE NUEVO (5 vidas, sin anuncio)';
+  livesAdBtn.textContent='📺 REVIVIR y conservar mis 🪙 (anuncio 30s)';
+
   document.getElementById('startBtn').addEventListener('click',()=>{
     started=true; document.getElementById('startOverlay').hidden=true; setNav(false);
   });
@@ -188,16 +200,27 @@
     if(!started||gameOver) return;
     paused=!paused;
     document.getElementById('pauseOverlay').hidden=!paused;
-    setNav(paused); // al pausar aparece la tabbar
+    setNav(paused);
   });
   document.getElementById('resumeBtn').addEventListener('click',()=>{
     paused=false; document.getElementById('pauseOverlay').hidden=true; setNav(false);
   });
-  document.getElementById('livesAdBtn').addEventListener('click',()=>{
-    mostrarAnuncioDemo(()=>{ nuevaPartida(); document.getElementById('overOverlay').hidden=true; started=true; setNav(false); });
+  livesAdBtn.addEventListener('click',()=>{
+    mostrarAnuncioDemo(()=>{
+      lives=3; skill=5; gameOver=false; invuln=1.5;
+      updateHud(); updateSkill();
+      overOverlay.hidden=true; started=true; setNav(false);
+    });
+  });
+  restartBtn.addEventListener('click',()=>{
+    reset();
+    overOverlay.hidden=true;
+    started=false;
+    document.getElementById('startOverlay').hidden=false;
+    setNav(true);
   });
 
-  /* ===== MOVIMIENTO JUGADOR ===== */
+  /* ===== MOVIMIENTO ===== */
   function puedeMoverGrid(gx,gy){
     const r=0.32;
     const minC=Math.floor(gx-r), maxC=Math.floor(gx+r);
@@ -283,7 +306,7 @@
     zombies.forEach(z=>{
       if(!z.alive){
         z.respawn-=dt;
-        if(z.respawn<=0){ z.alive=true; z.r=DOOR.r; z.c=DOOR.c; z.tr=z.r; z.tc=z.c; z.t=0; z.moving=false; }
+        if(z.respawn<=0){ z.alive=true; z.marked=false; z.r=DOOR.r; z.c=DOOR.c; z.tr=z.r; z.tc=z.c; z.t=0; z.moving=false; }
         return;
       }
       if(!z.moving) zombieDecide(z);
@@ -292,18 +315,21 @@
       if(invuln<=0 && Math.hypot(z.px-jpx(), z.py-jpy())<cell*0.6) perderVida();
     });
 
-    // bolas de fuego: homing garantizado (no chocan muro), impacto seguro
     for(let i=bullets.length-1;i>=0;i--){
       const b=bullets[i];
       b.life-=dt;
-      if(b.life<=0){ bullets.splice(i,1); continue; }
+      if(b.life<=0){ if(b.target) b.target.marked=false; bullets.splice(i,1); continue; }
       if(b.target&&b.target.alive){
         const dx=b.target.px-b.x, dy=b.target.py-b.y;
         const d=Math.hypot(dx,dy)||1;
         b.dx=dx/d; b.dy=dy/d;
+        if(d<cell*0.6){ // impacto garantizado: 1 disparo = 1 zombie
+          b.target.alive=false; b.target.marked=false; b.target.respawn=10;
+          bullets.splice(i,1); continue;
+        }
         b.x+=b.dx*cell*14*dt; b.y+=b.dy*cell*14*dt;
-        if(d<cell*0.5){ b.target.alive=false; b.target.respawn=10; bullets.splice(i,1); continue; }
       } else {
+        if(b.target) b.target.marked=false;
         bullets.splice(i,1); continue;
       }
     }
@@ -311,9 +337,9 @@
 
   function perderVida(){
     lives--; updateHud();
-    if(lives<=0){ gameOver=true; document.getElementById('overOverlay').hidden=false; setNav(true); return; }
+    if(lives<=0){ gameOver=true; overOverlay.hidden=false; setNav(true); return; }
     genMaze(); colocarJugador(); colocarZombies(); regenerarMonedas(); bullets=[];
-    skill=5; updateSkill();   // recarga bolitas al perder un corazón
+    skill=5; updateSkill();
     invuln=1.5;
   }
 
