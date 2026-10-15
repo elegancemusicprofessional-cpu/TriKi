@@ -1,4 +1,4 @@
-/* ============ TRIKI - MOTOR DEL JUEGO v3 ============ */
+/* ============ TRIKI - MOTOR DEL JUEGO v4 ============ */
 (function(){
   const canvas=document.getElementById('gameCanvas');
   const ctx=canvas.getContext('2d');
@@ -60,18 +60,27 @@
     const cols=['#3dff7c','#b04dff','#28e0ff','#ff2e93'];
     for(let i=0;i<4;i++) zombies.push(Object.assign(nuevaEntidad(sr,sc),{ color:cols[i], alive:true, respawn:0 }));
   }
-  function colocarJugador(){
-    const p=centro(1,1);
-    player={ x:p.x, y:p.y, dir:'right' };
+  // jugador en coordenadas de laberinto (gx,gy) => nunca desaparece con resize
+  function colocarJugador(){ player={ gx:1.5, gy:1.5, dir:'right' }; }
+  const jpx=()=> offX+player.gx*cell;
+  const jpy=()=> offY+player.gy*cell;
+
+  function resize(){
+    const w=area.clientWidth, h=area.clientHeight;
+    if(canvas.width!==w||canvas.height!==h){ canvas.width=w; canvas.height=h; }
+    cell=Math.min(w/COLS,h/ROWS);
+    offX=(w-cell*COLS)/2; offY=(h-cell*ROWS)/2;
   }
 
   function reset(){
+    resize();
     rnd=mulberry32(Date.now()%100000);
     genMaze(); colocarJugador(); colocarZombies(); regenerarMonedas(); bullets=[];
     lives=3; coins=0; skill=5; gameOver=false; invuln=1.5;
     updateHud(); updateSkill();
   }
   function nuevaPartida(){
+    resize();
     genMaze(); colocarJugador(); colocarZombies(); regenerarMonedas(); bullets=[];
     lives=3; skill=5; gameOver=false; invuln=1.5;
     updateHud(); updateSkill();
@@ -117,13 +126,12 @@
   });
   window.addEventListener('keyup',()=>{ inputDir=null; });
 
-  /* ===== ANUNCIO DEMO (uno solo) ===== */
+  /* ===== ANUNCIO DEMO ===== */
   function mostrarAnuncioDemo(callback){
     if(usandoAnuncio) return;
     usandoAnuncio=true;
     const ov=document.createElement('div');
-    ov.className='game-overlay';
-    ov.style.position='fixed'; ov.style.zIndex=200;
+    ov.className='game-overlay'; ov.style.position='fixed'; ov.style.zIndex=200;
     ov.innerHTML='<div class="ov-title">ANUNCIO 30s</div><div class="ov-title" style="font-size:40px" id="adDemoCount">30</div>';
     document.body.appendChild(ov);
     let s=30;
@@ -134,15 +142,35 @@
     },1000);
   }
 
-  /* ===== DISPARO (tap en pantalla o botón) ===== */
+  /* ===== CONFIRM para +5 bolitas (NO automático) ===== */
+  function mostrarConfirmAnuncio(onSi){
+    paused=true;
+    const ov=document.createElement('div');
+    ov.className='game-overlay'; ov.style.position='fixed'; ov.style.zIndex=200;
+    ov.innerHTML=
+      '<div class="ov-title" style="font-size:18px">¿Quieres 5 bolitas de fuego más?</div>'+
+      '<button class="ov-btn" id="cfSi">📺 SÍ, VER ANUNCIO (30s)</button>'+
+      '<button class="ov-btn sec" id="cfNo">NO, GRACIAS</button>';
+    document.body.appendChild(ov);
+    ov.querySelector('#cfSi').addEventListener('click',()=>{
+      ov.remove();
+      mostrarAnuncioDemo(()=>{ onSi(); paused=false; });
+    });
+    ov.querySelector('#cfNo').addEventListener('click',()=>{ ov.remove(); paused=false; });
+  }
+
+  /* ===== DISPARO ===== */
   function disparar(){
     if(!started||paused||gameOver) return;
-    if(skill<=0){ mostrarAnuncioDemo(()=>{ skill=5; updateSkill(); }); return; }
+    if(skill<=0){
+      mostrarConfirmAnuncio(()=>{ skill=5; updateSkill(); });
+      return;
+    }
     skill--; updateSkill();
     let target=null, best=1e9;
     zombies.forEach(z=>{ if(!z.alive) return;
-      const d=Math.hypot(z.px-player.x, z.py-player.y); if(d<best){ best=d; target=z; } });
-    bullets.push({ x:player.x, y:player.y, target, dx:0, dy:-1 });
+      const d=Math.hypot(z.px-jpx(), z.py-jpy()); if(d<best){ best=d; target=z; } });
+    bullets.push({ x:jpx(), y:jpy(), target, dx:0, dy:-1 });
   }
   canvas.addEventListener('pointerdown',()=>{ disparar(); });
   document.getElementById('skillBtn').addEventListener('click',()=>{ disparar(); });
@@ -160,35 +188,33 @@
     mostrarAnuncioDemo(()=>{ nuevaPartida(); document.getElementById('overOverlay').hidden=true; started=true; });
   });
 
-  /* ===== COLISIÓN JUGADOR (continuo) ===== */
-  function puedeMover(nx,ny){
-    const r=cell*0.32;
-    const minC=Math.floor((nx-r-offX)/cell), maxC=Math.floor((nx+r-offX)/cell);
-    const minR=Math.floor((ny-r-offY)/cell), maxR=Math.floor((ny+r-offY)/cell);
+  /* ===== MOVIMIENTO JUGADOR (grid flotante) ===== */
+  function puedeMoverGrid(gx,gy){
+    const r=0.32;
+    const minC=Math.floor(gx-r), maxC=Math.floor(gx+r);
+    const minR=Math.floor(gy-r), maxR=Math.floor(gy+r);
     for(let rr=minR;rr<=maxR;rr++)for(let cc=minC;cc<=maxC;cc++){
       if(rr<0||rr>=ROWS||cc<0||cc>=COLS||grid[rr][cc]===1) return false;
     }
     return true;
   }
   function moverJugador(dt){
-    if(!inputDir) return; // al soltar, se detiene (control total)
-    const vel=cell*6.5*dt;
+    if(!inputDir) return;
+    const vel=6.5*dt;
     if(inputDir==='left'||inputDir==='right'){
-      const nx=player.x+(inputDir==='right'?vel:-vel);
-      if(puedeMover(nx,player.y)) player.x=nx;
-      const cy=Math.floor((player.y-offY)/cell);
-      const targetY=offY+cy*cell+cell/2;
-      const dy=targetY-player.y;
+      const ngx=player.gx+(inputDir==='right'?vel:-vel);
+      if(puedeMoverGrid(ngx,player.gy)) player.gx=ngx;
+      const targetY=Math.floor(player.gy)+0.5;
+      const dy=targetY-player.gy;
       const s=Math.sign(dy)*Math.min(Math.abs(dy),vel);
-      if(puedeMover(player.x,player.y+s)) player.y+=s;
+      if(puedeMoverGrid(player.gx,player.gy+s)) player.gy+=s;
     } else {
-      const ny=player.y+(inputDir==='down'?vel:-vel);
-      if(puedeMover(player.x,ny)) player.y=ny;
-      const cx=Math.floor((player.x-offX)/cell);
-      const targetX=offX+cx*cell+cell/2;
-      const dx=targetX-player.x;
+      const ngy=player.gy+(inputDir==='down'?vel:-vel);
+      if(puedeMoverGrid(player.gx,ngy)) player.gy=ngy;
+      const targetX=Math.floor(player.gx)+0.5;
+      const dx=targetX-player.gx;
       const s=Math.sign(dx)*Math.min(Math.abs(dx),vel);
-      if(puedeMover(player.x+s,player.y)) player.x+=s;
+      if(puedeMoverGrid(player.gx+s,player.gy)) player.gx+=s;
     }
     player.dir=inputDir;
   }
@@ -210,20 +236,18 @@
       ent.px=a.x+(b.x-a.x)*ent.t; ent.py=a.y+(b.y-a.y)*ent.t;
     } else { ent.px=a.x; ent.py=a.y; }
   }
+  function playerCelda(){ return { r:Math.floor(player.gy), c:Math.floor(player.gx) }; }
   function zombieDecide(z){
+    const pc=playerCelda();
     const opts=['right','left','down','up'].filter(d=>{ const [dr,dc]=DELTA[d]; return esCamino(z.r+dr,z.c+dc); });
     if(!opts.length) return;
     const back={ right:'left', left:'right', down:'up', up:'down' }[z.dir];
     let pool=opts.filter(d=>d!==back); if(!pool.length) pool=opts;
     pool.sort((d1,d2)=>{
       const [a1,b1]=DELTA[d1], [a2,b2]=DELTA[d2];
-      return (Math.abs(z.r+a1-playerCelda().r)+Math.abs(z.c+b1-playerCelda().c))-
-             (Math.abs(z.r+a2-playerCelda().r)+Math.abs(z.c+b2-playerCelda().c));
+      return (Math.abs(z.r+a1-pc.r)+Math.abs(z.c+b1-pc.c))-(Math.abs(z.r+a2-pc.r)+Math.abs(z.c+b2-pc.c));
     });
     tryMove(z,(Math.random()<0.8)?pool[0]:pool[Math.floor(Math.random()*pool.length)]);
-  }
-  function playerCelda(){
-    return { r:Math.floor((player.y-offY)/cell), c:Math.floor((player.x-offX)/cell) };
   }
 
   let last=performance.now();
@@ -254,9 +278,9 @@
         return;
       }
       if(!z.moving) zombieDecide(z);
-      stepEnt(z,3.4,dt);   // zombies un poco más lentos
+      stepEnt(z,3.4,dt);
       if(!z.moving) zombieDecide(z);
-      if(invuln<=0 && Math.hypot(z.px-player.x, z.py-player.y)<cell*0.6) perderVida();
+      if(invuln<=0 && Math.hypot(z.px-jpx(), z.py-jpy())<cell*0.6) perderVida();
     });
 
     for(let i=bullets.length-1;i>=0;i--){
@@ -277,14 +301,7 @@
     lives--; updateHud();
     if(lives<=0){ gameOver=true; document.getElementById('overOverlay').hidden=false; return; }
     genMaze(); colocarJugador(); colocarZombies(); regenerarMonedas(); bullets=[];
-    invuln=1.5; // respiro tras perder vida
-  }
-
-  function resize(){
-    const w=area.clientWidth, h=area.clientHeight;
-    if(canvas.width!==w||canvas.height!==h){ canvas.width=w; canvas.height=h; }
-    cell=Math.min(w/COLS,h/ROWS);
-    offX=(w-cell*COLS)/2; offY=(h-cell*ROWS)/2;
+    invuln=1.5;
   }
 
   /* ===== DIBUJO ===== */
@@ -350,24 +367,23 @@
       ctx.fillRect(z.px+cell*0.04,z.py+cell*0.14,cell*0.08,cell*0.08);
     });
 
-    { const p=player;
-      // parpadeo si es invulnerable
+    { const px=jpx(), py=jpy();
       if(invuln>0 && Math.floor(invuln*10)%2===0) ctx.globalAlpha=0.5;
       ctx.fillStyle='#e8332a';
-      ctx.beginPath(); ctx.ellipse(p.x-cell*0.16,p.y+cell*0.3,cell*0.14,cell*0.08,0,0,7); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(p.x+cell*0.16,p.y+cell*0.3,cell*0.14,cell*0.08,0,0,7); ctx.fill();
-      const g=ctx.createRadialGradient(p.x-cell*0.1,p.y-cell*0.12,cell*0.05,p.x,p.y,cell*0.36);
+      ctx.beginPath(); ctx.ellipse(px-cell*0.16,py+cell*0.3,cell*0.14,cell*0.08,0,0,7); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(px+cell*0.16,py+cell*0.3,cell*0.14,cell*0.08,0,0,7); ctx.fill();
+      const g=ctx.createRadialGradient(px-cell*0.1,py-cell*0.12,cell*0.05,px,py,cell*0.36);
       g.addColorStop(0,'#d8fbff'); g.addColorStop(.5,'#59e6ff'); g.addColorStop(1,'#0aa9d6');
       ctx.fillStyle=g;
-      ctx.beginPath(); ctx.arc(p.x,p.y,cell*0.34,0,7); ctx.fill();
+      ctx.beginPath(); ctx.arc(px,py,cell*0.34,0,7); ctx.fill();
       ctx.fillStyle='#fff';
-      ctx.beginPath(); ctx.arc(p.x-cell*0.12,p.y-cell*0.06,cell*0.1,0,7); ctx.fill();
-      ctx.beginPath(); ctx.arc(p.x+cell*0.12,p.y-cell*0.06,cell*0.1,0,7); ctx.fill();
+      ctx.beginPath(); ctx.arc(px-cell*0.12,py-cell*0.06,cell*0.1,0,7); ctx.fill();
+      ctx.beginPath(); ctx.arc(px+cell*0.12,py-cell*0.06,cell*0.1,0,7); ctx.fill();
       ctx.fillStyle='#111';
-      ctx.beginPath(); ctx.arc(p.x-cell*0.1,p.y-cell*0.05,cell*0.045,0,7); ctx.fill();
-      ctx.beginPath(); ctx.arc(p.x+cell*0.14,p.y-cell*0.05,cell*0.045,0,7); ctx.fill();
+      ctx.beginPath(); ctx.arc(px-cell*0.1,py-cell*0.05,cell*0.045,0,7); ctx.fill();
+      ctx.beginPath(); ctx.arc(px+cell*0.14,py-cell*0.05,cell*0.045,0,7); ctx.fill();
       ctx.strokeStyle='#111'; ctx.lineWidth=2;
-      ctx.beginPath(); ctx.arc(p.x,p.y+cell*0.1,cell*0.14,0.2*Math.PI,0.8*Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.arc(px,py+cell*0.1,cell*0.14,0.2*Math.PI,0.8*Math.PI); ctx.stroke();
       ctx.globalAlpha=1; }
   }
 
