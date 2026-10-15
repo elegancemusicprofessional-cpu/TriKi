@@ -60,54 +60,61 @@
   .placeholder h2{ font-size:19px; font-weight:900; margin-bottom:8px; }
   .placeholder p{ font-size:13px; color:rgba(255,255,255,.7); line-height:1.5; }
 
-  /* ===== MÚSICA ===== */
-  #p-musica{ background:none; transition:background .8s ease; }
-  .music-shade{ position:absolute; inset:0; z-index:0;
-    background:linear-gradient(rgba(5,3,10,.30), rgba(5,3,10,.45)); }
-  .music-full{ position:relative; z-index:1; height:100%;
-    display:flex; flex-direction:column; justify-content:space-between;
+  /* ===== MÚSICA (nuevo reproductor cristalino) ===== */
+  #p-musica{ background:none; }
+  .music-bg{ position:absolute; inset:-60px; z-index:0;
+    filter:blur(60px) saturate(1.6); opacity:.85; transform:scale(1.2); transition:background .9s ease; }
+  .music-wrap{ position:relative; z-index:1; height:100%; display:flex; flex-direction:column; gap:10px;
     padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px; }
-  .music-topbar{ display:flex; align-items:center; gap:10px; }
-  .icon-round{ width:40px; height:40px; border-radius:50%; border:none; cursor:pointer;
-    background:rgba(255,255,255,.16); backdrop-filter:blur(12px); color:#fff; font-size:17px;
-    display:grid; place-items:center; box-shadow:0 6px 16px rgba(0,0,0,.35); }
-  .music-titlebox{ flex:1; text-align:center; min-width:0; }
-  .music-titlebox b{ display:block; font-size:17px; font-weight:900;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .music-titlebox span{ font-size:12px; color:rgba(255,255,255,.75); }
-  .music-ad{ margin-top:10px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+  .music-search{ display:flex; gap:8px; flex:0 0 auto; }
+  .music-search input{ flex:1; padding:11px 16px; border-radius:100px;
+    border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.12);
+    backdrop-filter:blur(12px); color:#fff; font-size:13px; font-family:inherit; outline:none; }
+  .music-search input::placeholder{ color:rgba(255,255,255,.6); }
+  .music-search button{ width:42px; border-radius:50%; border:none; cursor:pointer;
+    background:rgba(255,255,255,.16); backdrop-filter:blur(12px); display:grid; place-items:center; }
+  .music-search svg{ width:17px; height:17px; stroke:#fff; fill:none; stroke-width:2; stroke-linecap:round; }
+  .music-adslot{ flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; gap:10px;
     padding:8px 12px; border-radius:14px;
     background:rgba(10,6,18,.6); backdrop-filter:blur(12px); border:1px solid rgba(255,46,147,.55); }
-  .music-ad[hidden]{ display:none; }
-  .music-ad .t{ font-size:11px; font-weight:800; }
-  .music-ad .t small{ display:block; font-size:9px; font-weight:600; color:rgba(255,255,255,.7); }
-  .music-ad .c{ font-size:20px; font-weight:900; color:var(--amarillo); }
-  .music-ad .x{ border:none; background:rgba(255,255,255,.14); color:#fff; font-size:9px; font-weight:700;
-    padding:6px 8px; border-radius:8px; cursor:pointer; }
-  .music-center{ display:flex; flex-direction:column; align-items:center; gap:14px; padding-bottom:6px; }
-  .m-progress{ width:88%; height:5px; background:rgba(255,255,255,.25); border-radius:100px; overflow:hidden; }
-  .m-fill{ height:100%; width:35%; border-radius:100px; background:#fff; }
-  .m-times{ width:88%; display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,.8); margin-top:-8px; }
-  .m-controls{ display:flex; align-items:center; justify-content:center; gap:30px; }
-  .m-btn{ border:none; background:none; color:#fff; font-size:22px; cursor:pointer; text-shadow:0 2px 8px rgba(0,0,0,.5); }
-  .m-play{ width:68px; height:68px; border-radius:50%; border:none; color:#fff; font-size:24px; cursor:pointer;
-    background:rgba(255,255,255,.2); backdrop-filter:blur(14px);
+  .music-adslot[hidden]{ display:none; }
+  .music-adslot .t{ font-size:11px; font-weight:800; }
+  .music-adslot .t small{ display:block; font-size:9px; font-weight:600; color:rgba(255,255,255,.7); }
+  .music-adslot .c{ font-size:20px; font-weight:900; color:var(--amarillo); }
+  .music-adslot .x{ border:none; background:rgba(255,255,255,.14); color:#fff; font-size:11px; font-weight:700;
+    padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .glass-panel{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:6px; text-align:center;
+    backdrop-filter:blur(22px) saturate(1.4); -webkit-backdrop-filter:blur(22px) saturate(1.4);
+    background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25);
+    border-radius:26px; padding:16px;
+    box-shadow:0 20px 50px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.3); }
+  .cover{ width:52vw; height:52vw; max-width:210px; max-height:210px; border-radius:18px;
+    box-shadow:0 14px 34px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.35); transition:background .9s ease; }
+  .m-title{ font-size:20px; font-weight:900; margin-top:10px; }
+  .m-artist{ font-size:13px; color:rgba(255,255,255,.75); }
+  .m-progress{ width:86%; height:5px; background:rgba(255,255,255,.28); border-radius:100px; margin:14px 0 6px; overflow:hidden; }
+  .m-fill{ height:100%; width:0%; border-radius:100px; background:#fff; }
+  .m-times{ width:86%; display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,.8); }
+  .m-controls{ display:flex; align-items:center; justify-content:center; gap:30px; margin-top:14px; }
+  .m-btn{ border:none; background:none; color:#fff; cursor:pointer; display:grid; place-items:center; }
+  .m-btn svg{ width:24px; height:24px; fill:#fff; filter:drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
+  .m-play{ width:66px; height:66px; border-radius:50%; border:none; cursor:pointer;
+    background:rgba(255,255,255,.22); backdrop-filter:blur(14px); display:grid; place-items:center;
     box-shadow:0 12px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.4); }
+  .music-bottom{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:10px; }
+  .color-wheel{ width:46px; height:46px; border-radius:50%; border:2px solid rgba(255,255,255,.5); cursor:pointer;
+    background:conic-gradient(#ff2e93,#ffd21f,#3dff7c,#28e0ff,#b04dff,#ff2e93);
+    box-shadow:0 0 14px rgba(255,255,255,.4), 0 6px 16px rgba(0,0,0,.4); }
+  .mb-hint{ font-size:11px; color:rgba(255,255,255,.7); }
   .color-panel{ position:absolute; left:14px; right:14px; bottom:14px; z-index:6;
-    background:rgba(10,6,18,.85); backdrop-filter:blur(18px);
+    background:rgba(10,6,18,.88); backdrop-filter:blur(18px);
     border:1px solid rgba(255,255,255,.2); border-radius:20px; padding:14px;
     box-shadow:0 20px 50px rgba(0,0,0,.5); }
   .color-panel[hidden]{ display:none; }
-  .music-search{ display:flex; gap:8px; margin-bottom:12px; }
-  .music-search input{ flex:1; padding:10px 14px; border-radius:100px;
-    border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.08);
-    color:#fff; font-size:13px; font-family:inherit; outline:none; }
-  .music-search input::placeholder{ color:rgba(255,255,255,.5); }
-  .music-search button{ width:40px; border-radius:50%; border:none; cursor:pointer;
-    background:rgba(255,255,255,.14); color:#fff; font-size:14px; }
-  .color-list{ display:flex; flex-wrap:wrap; gap:10px; max-height:150px; overflow-y:auto; }
+  .color-list{ display:flex; flex-wrap:wrap; gap:10px; max-height:160px; overflow-y:auto; }
   .color-list::-webkit-scrollbar{ display:none; }
-  .color-dot{ width:40px; height:40px; border-radius:12px; cursor:pointer;
+  .color-dot{ width:42px; height:42px; border-radius:12px; cursor:pointer;
     border:2px solid transparent; box-shadow:0 4px 12px rgba(0,0,0,.4); }
   .color-dot.sel{ border-color:#fff; box-shadow:0 0 12px rgba(255,255,255,.7); }
 
@@ -134,7 +141,6 @@
   .ad30-count{ font-size:22px; font-weight:900; color:var(--amarillo); }
   .ad30-skip{ border:none; background:rgba(255,255,255,.14); color:#fff; font-size:9px; font-weight:700;
     padding:6px 8px; border-radius:8px; cursor:pointer; }
-
   .game-area{ flex:1; width:100%; position:relative; overflow:hidden; }
   #gameCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
   #hud{ position:absolute; top:8px; left:10px; z-index:2; display:flex; gap:10px;
@@ -143,16 +149,12 @@
     align-items:center; justify-content:center; gap:12px;
     background:rgba(5,3,10,.65); backdrop-filter:blur(6px); text-align:center; padding:20px; }
   .game-overlay[hidden]{ display:none; }
-  .ov-title{ font-size:26px; font-weight:900; letter-spacing:2px;
-    text-shadow:0 0 18px rgba(40,224,255,.7); }
+  .ov-title{ font-size:26px; font-weight:900; letter-spacing:2px; text-shadow:0 0 18px rgba(40,224,255,.7); }
   .ov-btn{ border:none; cursor:pointer; padding:12px 26px; border-radius:100px;
     background:linear-gradient(135deg,var(--rosa),var(--morado)); color:#fff;
-    font-size:15px; font-weight:800; font-family:inherit;
-    box-shadow:0 10px 26px rgba(176,77,255,.5); }
+    font-size:15px; font-weight:800; font-family:inherit; box-shadow:0 10px 26px rgba(176,77,255,.5); }
   .ov-btn.sec{ background:rgba(255,255,255,.14); box-shadow:none; }
-
-  .game-bottom{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:16px;
-    padding:8px 0 10px; }
+  .game-bottom{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:16px; padding:8px 0 10px; }
   .side-btn{ width:58px; height:58px; border-radius:18px; border:none; cursor:pointer;
     background:rgba(10,6,18,.6); backdrop-filter:blur(10px);
     border:1px solid rgba(255,255,255,.2); color:#fff; font-size:20px;
@@ -162,15 +164,6 @@
   .side-btn .cnt{ position:absolute; top:-6px; right:-6px; min-width:20px; height:20px;
     border-radius:100px; background:var(--amarillo); color:#5a3d00;
     font-size:11px; font-weight:900; display:grid; place-items:center; padding:0 4px; }
-  .joy-slot{ width:110px; height:80px; border-radius:22px; position:relative;
-    background:rgba(10,6,18,.5); backdrop-filter:blur(10px);
-    border:1px solid rgba(255,255,255,.2); touch-action:none;
-    box-shadow:0 6px 16px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.15); }
-  .joy-knob{ position:absolute; left:50%; top:50%; width:36px; height:36px; margin:-18px 0 0 -18px;
-    border-radius:50%;
-    background:radial-gradient(circle at 35% 30%, #ff8a8a, #e8332a 55%, #8f130c);
-    box-shadow:0 4px 10px rgba(0,0,0,.6), inset 0 2px 3px rgba(255,255,255,.4);
-    transition:transform .08s ease; }
 
   /* ===== TABBAR ===== */
   nav{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; padding:10px 10px;
@@ -231,10 +224,9 @@
             <button class="ad30-skip" id="adSkip">⏩ saltar (demo)</button>
           </div>
         </div>
-
         <div class="game-area" id="gameArea">
           <canvas id="gameCanvas"></canvas>
-          <div id="hud"><span id="hudLives">❤️ 3</span><span id="hudCoins">🪙 0</span></div>
+          <div id="hud"><span id="hudLives">❤️ 5</span><span id="hudCoins">🪙 0</span></div>
           <div class="game-overlay" id="startOverlay">
             <div class="ov-title">TRIKI</div>
             <button class="ov-btn" id="startBtn">▶ EMPEZAR</button>
@@ -245,47 +237,48 @@
           </div>
           <div class="game-overlay" id="overOverlay" hidden>
             <div class="ov-title">GAME OVER</div>
-            <button class="ov-btn" id="livesAdBtn">📺 +3 vidas (anuncio)</button>
-            <button class="ov-btn sec" id="restartBtn">↻ reiniciar</button>
+            <button class="ov-btn" id="livesAdBtn">📺 REVIVIR</button>
+            <button class="ov-btn sec" id="restartBtn">↻ EMPEZAR DE NUEVO</button>
           </div>
         </div>
-
         <div class="game-bottom">
           <button class="side-btn" id="pauseBtn" aria-label="Pausa">⏸</button>
-          <div class="joy-slot" id="joyZone"><div class="joy-knob" id="joyKnob"></div></div>
-          <button class="side-btn" id="skillBtn" aria-label="Habilidad">🎯<span class="cnt" id="skillCount">5</span></button>
+          <div class="joy-slot" id="joyZone"></div>
+          <button class="side-btn" id="skillBtn" aria-label="Disparo"></button>
         </div>
       </section>
 
-      <!-- MÚSICA -->
+      <!-- MÚSICA (nuevo) -->
       <section class="page" id="p-musica">
-        <div class="music-shade"></div>
-        <div class="music-full">
-          <div class="music-topbar">
-            <button class="icon-round" id="paletteBtn" aria-label="Colores">🎨</button>
-            <div class="music-titlebox"><b id="mTitle">Neon Dreams</b><span id="mArtist">Triki Sounds</span></div>
-            <button class="icon-round" id="demoFinBtn" aria-label="Simular fin">📺</button>
+        <div class="music-bg" id="musicBg"></div>
+        <div class="music-wrap">
+          <div class="music-search">
+            <input id="searchInput" type="text" placeholder="Buscar canción...">
+            <button id="searchBtn" aria-label="Buscar"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg></button>
           </div>
-          <div class="music-ad" id="musicAd" hidden>
-            <div class="t">ANUNCIO 30s<small>Siguiente canción al terminar</small></div>
+          <div class="music-adslot" id="musicAdSlot" hidden>
+            <div class="t">ANUNCIO 30s<small>La siguiente canción empieza al terminar</small></div>
             <div class="c" id="musicAdCount">30</div>
             <button class="x" id="musicAdSkip">⏩ saltar (demo)</button>
           </div>
-          <div class="music-center">
-            <div class="m-progress"><div class="m-fill"></div></div>
-            <div class="m-times"><span>1:24</span><span>3:56</span></div>
+          <div class="glass-panel">
+            <div class="cover" id="cover"></div>
+            <div class="m-title" id="mTitle">Neon Dreams</div>
+            <div class="m-artist" id="mArtist">Triki Sounds</div>
+            <div class="m-progress"><div class="m-fill" id="mFill"></div></div>
+            <div class="m-times"><span id="mCur">0:00</span><span id="mDur">0:00</span></div>
             <div class="m-controls">
-              <button class="m-btn" id="mPrev">⏮</button>
-              <button class="m-play" id="mPlay">▶</button>
-              <button class="m-btn" id="mNext">⏭</button>
+              <button class="m-btn" id="mPrev" aria-label="Anterior"></button>
+              <button class="m-play" id="mPlay" aria-label="Play"></button>
+              <button class="m-btn" id="mNext" aria-label="Siguiente"></button>
             </div>
+          </div>
+          <div class="music-bottom">
+            <button class="color-wheel" id="wheelBtn" aria-label="Colores"></button>
+            <div class="mb-hint">Toca la rueda para elegir canción</div>
           </div>
         </div>
         <div class="color-panel" id="colorPanel" hidden>
-          <div class="music-search">
-            <input id="searchInput" type="text" placeholder="Buscar canción...">
-            <button id="searchBtn" aria-label="Buscar">🔍</button>
-          </div>
           <div class="color-list" id="colorList"></div>
         </div>
       </section>
@@ -337,60 +330,7 @@
     });
   });
 
-  // --- MÚSICA ---
-  const CANCIONES=[
-    { t:'Neon Dreams', a:'Triki Sounds', c:'linear-gradient(135deg,#ff2e93,#b04dff)' },
-    { t:'Cyber Wave', a:'Triki Sounds', c:'linear-gradient(135deg,#28e0ff,#0a5bd6)' },
-    { t:'Golden Rush', a:'Triki Sounds', c:'linear-gradient(135deg,#ffd21f,#ff7a00)' },
-    { t:'Toxic Garden', a:'Triki Sounds', c:'linear-gradient(135deg,#3dff7c,#0a8f4e)' },
-    { t:'Sunset Drive', a:'Triki Sounds', c:'linear-gradient(135deg,#ff7a00,#ff2e93)' },
-    { t:'Ocean Pulse', a:'Triki Sounds', c:'linear-gradient(135deg,#00d9a3,#28e0ff)' },
-    { t:'Midnight Sky', a:'Triki Sounds', c:'linear-gradient(135deg,#6a4bff,#ff2e93)' },
-    { t:'Neon Jungle', a:'Triki Sounds', c:'linear-gradient(135deg,#ffd21f,#3dff7c)' }
-  ];
-  let songIdx=0;
-  const pMusica=document.getElementById('p-musica');
-  const mTitle=document.getElementById('mTitle'), mArtist=document.getElementById('mArtist');
-  const colorPanel=document.getElementById('colorPanel'), colorList=document.getElementById('colorList');
-  function pintaColores(lista){
-    colorList.innerHTML='';
-    lista.forEach((s)=>{
-      const i=CANCIONES.indexOf(s);
-      const d=document.createElement('div');
-      d.className='color-dot'+(i===songIdx?' sel':'');
-      d.style.background=s.c; d.title=s.t;
-      d.addEventListener('click',()=>setSong(i));
-      colorList.appendChild(d);
-    });
-  }
-  function setSong(i){
-    songIdx=i; const s=CANCIONES[i];
-    pMusica.style.background=s.c;
-    mTitle.textContent=s.t; mArtist.textContent=s.a;
-    document.getElementById('songName').textContent='Sonando: '+s.t;
-    pintaColores(CANCIONES);
-  }
-  document.getElementById('paletteBtn').addEventListener('click',()=>{ colorPanel.hidden=!colorPanel.hidden; });
-  document.getElementById('mNext').addEventListener('click',()=>setSong((songIdx+1)%CANCIONES.length));
-  document.getElementById('mPrev').addEventListener('click',()=>setSong((songIdx-1+CANCIONES.length)%CANCIONES.length));
-  function buscar(){
-    const q=document.getElementById('searchInput').value.toLowerCase().trim();
-    pintaColores(q? CANCIONES.filter(s=>s.t.toLowerCase().includes(q)) : CANCIONES);
-  }
-  document.getElementById('searchBtn').addEventListener('click',buscar);
-  document.getElementById('searchInput').addEventListener('input',buscar);
-  setSong(0);
-
-  // --- Demo anuncio música ---
-  const musicAd=document.getElementById('musicAd'), musicAdCount=document.getElementById('musicAdCount');
-  let mAdTimer=null;
-  document.getElementById('demoFinBtn').addEventListener('click',()=>{
-    musicAd.hidden=false; let s=30; musicAdCount.textContent=s;
-    mAdTimer=setInterval(()=>{ s--; musicAdCount.textContent=s; if(s<=0){ clearInterval(mAdTimer); musicAd.hidden=true; } },1000);
-  });
-  document.getElementById('musicAdSkip').addEventListener('click',()=>{ clearInterval(mAdTimer); musicAd.hidden=true; });
-
-  // --- Demo anuncio juego (slot reproductor) ---
+  // --- Demo anuncio 30s en el slot del mini-reproductor del JUEGO ---
   const miniPlayer=document.getElementById('miniPlayer'), ad30Full=document.getElementById('ad30Full');
   const adCount=document.getElementById('adCount'); let adTimer=null;
   document.getElementById('btnNext').addEventListener('click',()=>{
@@ -401,5 +341,6 @@
   function finAnuncio(){ ad30Full.hidden=true; miniPlayer.hidden=false; }
 </script>
 <script src="js/juego.js"></script>
+<script src="js/musica.js"></script>
 </body>
- </html>
+             </html>
