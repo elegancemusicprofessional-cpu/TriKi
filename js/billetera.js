@@ -72,9 +72,15 @@
     });
   });
 
-  // botón ? palpitante -> política deslizable
-  $('helpBtn').addEventListener('click',()=>{ $('policyModal').hidden=false; });
-  $('policyClose').addEventListener('click',()=>{ $('policyModal').hidden=true; });
+  // botón ? : al abrir la política el ? SE OCULTA para no tapar letras; al cerrar, reaparece
+  $('helpBtn').addEventListener('click',()=>{
+    $('policyModal').hidden=false;
+    $('helpBtn').style.display='none';
+  });
+  $('policyClose').addEventListener('click',()=>{
+    $('policyModal').hidden=true;
+    $('helpBtn').style.display='';
+  });
 
   // conectar billetera (prototipo; después se integra Telegram Wallet real)
   $('connectBtn').addEventListener('click',()=>{
