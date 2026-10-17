@@ -252,8 +252,8 @@
   .connect-btn{ width:100%; padding:13px; border-radius:14px; border:none; cursor:pointer;
     background:linear-gradient(135deg,#28e0ff,#0a5bd6); color:#04202f;
     font-size:14px; font-weight:900; font-family:inherit; box-shadow:0 8px 20px rgba(40,224,255,.4); }
-  /* Botón ? FIJO abajo, a la par del robot (izquierda), no se oculta al deslizar */
-  .help-btn{ position:fixed; left:12%; bottom:24%; width:60px; height:60px; border-radius:50%;
+  /* Botón ? anclado ABAJO, a la par del robot (con prioridad para que nada lo pise) */
+  #p-billetera .help-btn{ position:absolute; left:10%; bottom:26%; width:60px; height:60px; border-radius:50%;
     border:none; cursor:pointer; color:#04202f; font-size:26px; font-weight:900; font-family:inherit;
     background:radial-gradient(circle at 35% 30%, #d8fbff, #28e0ff 55%, #0a5bd6);
     animation:pulse 1.6s infinite; z-index:5; }
@@ -596,4 +596,4 @@
 <script src="js/top.js"></script>
 <script src="js/billetera.js"></script>
 </body>
-                                                                                                                               </html>
+ </html>
