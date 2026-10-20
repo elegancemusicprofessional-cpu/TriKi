@@ -1,16 +1,18 @@
-/* ============ TRIKI - PESTAÑA TAREAS ============ */
+/* ============ TRIKI - PESTAÑA TAREAS (conectada al cerebro) ============ */
 (function(){
   const $=id=>document.getElementById(id);
-  let saldo=0;
+  const S=()=>window.TrikiSaldo;
 
-  // formato corto: 1k, 10k, 100k, 1M
   const fmtK=n=>{
     if(n>=1e6) return (n/1e6).toFixed(n%1e6?1:0).replace('.0','')+'M';
     if(n>=1000) return (n/1000).toFixed(n%1000?1:0).replace('.0','')+'k';
     return ''+n;
   };
-  const pintaSaldo=()=>{ $('tBalance').textContent=fmtK(saldo); };
-  const sumar=n=>{ saldo+=n; pintaSaldo(); };
+  const pintaSaldo=()=>{ $('tBalance').textContent=fmtK(S()?S().valor:0); };
+
+  // suscribe el balance en vivo
+  if(S()) S().on(pintaSaldo);
+  window.addEventListener('triki-db-listo', ()=>{ if(S()) S().on(pintaSaldo); });
 
   // sub-pestañas
   document.querySelectorAll('.t-tab').forEach(b=>{
@@ -38,7 +40,7 @@
     },1000);
   }
 
-  // recompensas diarias (reclamar OBLIGA anuncio)
+  // recompensas diarias
   const dias=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
   const vals=[1000,2000,3000,4000,5000,6000,7000];
   let diaIdx=0;
@@ -53,14 +55,14 @@
     });
   }
   $('claimBtn').addEventListener('click',()=>{
-    anuncio30(()=>{ sumar(vals[diaIdx]); diaIdx=(diaIdx+1)%7; pintaDias(); });
+    anuncio30(()=>{ S().sumar(vals[diaIdx]); diaIdx=(diaIdx+1)%7; pintaDias(); });
   });
 
-  // botones de portales de anuncio (+5k)
-  $('adsgramBtn').addEventListener('click',()=>anuncio30(()=>sumar(5000)));
-  $('monetagBtn').addEventListener('click',()=>anuncio30(()=>sumar(5000)));
+  // botones de portales de anuncio (+5k) -> guardan en el cerebro
+  $('adsgramBtn').addEventListener('click',()=>anuncio30(()=>S().sumar(5000)));
+  $('monetagBtn').addEventListener('click',()=>anuncio30(()=>S().sumar(5000)));
 
-  // tareas del creador (prototipo: quedan PENDIENTES de verificación)
+  // tareas del creador (pendientes de aprobación)
   document.querySelectorAll('.task-creator').forEach(b=>{
     b.addEventListener('click',()=>{
       b.classList.add('pend');
