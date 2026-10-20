@@ -46,6 +46,7 @@ onAuthStateChanged(auth, async (user) => {
 
     // ---- funciones del cerebro (las usaremos en el PASO 3) ----
     window.TrikiDB.leer          = async () => (await getDoc(uref())).data();
+    window.TrikiDB.escribir = (obj) => updateDoc(uref(), obj);
     window.TrikiDB.sumarSaldo    = (n)   => updateDoc(uref(), { saldo: increment(n) });
     window.TrikiDB.sumarTiempo   = (seg) => updateDoc(uref(), { tiempoSeg: increment(seg) });
     window.TrikiDB.ponerBilletera= (a)   => updateDoc(uref(), { billetera: a });
