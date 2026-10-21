@@ -252,7 +252,6 @@
   .connect-btn{ width:100%; padding:13px; border-radius:14px; border:none; cursor:pointer;
     background:linear-gradient(135deg,#28e0ff,#0a5bd6); color:#04202f;
     font-size:14px; font-weight:900; font-family:inherit; box-shadow:0 8px 20px rgba(40,224,255,.4); }
-  /* Botón ? anclado ABAJO, a la par del robot (con prioridad para que nada lo pise) */
   #p-billetera .help-btn{ position:absolute; left:10%; bottom:26%; width:60px; height:60px; border-radius:50%;
     border:none; cursor:pointer; color:#04202f; font-size:26px; font-weight:900; font-family:inherit;
     background:radial-gradient(circle at 35% 30%, #d8fbff, #28e0ff 55%, #0a5bd6);
@@ -351,9 +350,9 @@
     box-shadow:0 10px 22px rgba(40,224,255,.45), inset 0 2px 3px rgba(255,255,255,.45), inset 0 -3px 6px rgba(0,0,0,.3); }
 
   .banner-slot{ height:56px; flex-shrink:0; margin:8px 12px calc(8px + env(safe-area-inset-bottom,0px));
-    border:1px dashed rgba(255,255,255,.25); border-radius:14px; display:grid; place-items:center;
+    border:1px solid rgba(255,255,255,.15); border-radius:14px; display:grid; place-items:center;
     font-size:10px; font-weight:700; letter-spacing:1px; color:rgba(255,255,255,.4);
-    background:rgba(10,6,18,.5); }
+    background:rgba(10,6,18,.5); overflow:hidden; }
 </style>
 </head>
 <body>
@@ -468,38 +467,42 @@
             <div class="task-grid">
               <button class="task-card" id="adsgramBtn">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="url(#gReel)"/><circle cx="12" cy="12" r="2.2" fill="#22222e"/><circle cx="12" cy="6.8" r="1.7" fill="#22222e"/><circle cx="12" cy="17.2" r="1.7" fill="#22222e"/><circle cx="6.8" cy="12" r="1.7" fill="#22222e"/><circle cx="17.2" cy="12" r="1.7" fill="#22222e"/></svg>
-                <b>Ver anuncio</b><span class="reward">+5k</span>
+                <b>Ver anuncio</b><span class="reward">+1k</span>
               </button>
               <button class="task-card" id="monetagBtn">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="url(#gReel)"/><circle cx="12" cy="12" r="2.2" fill="#22222e"/><circle cx="12" cy="6.8" r="1.7" fill="#22222e"/><circle cx="12" cy="17.2" r="1.7" fill="#22222e"/><circle cx="6.8" cy="12" r="1.7" fill="#22222e"/><circle cx="17.2" cy="12" r="1.7" fill="#22222e"/></svg>
-                <b>Ver anuncio</b><span class="reward">+5k</span>
+                <b>Ver anuncio</b><span class="reward">+1k</span>
               </button>
             </div>
           </div>
           <div class="t-page" id="t2">
             <div class="task-grid">
-              <button class="task-card task-creator">
+              <button class="task-card task-creator" id="tYouTube">
                 <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3.5" fill="url(#gYT)"/><path d="M10 9.2l6 2.8-6 2.8z" fill="#fff"/></svg>
                 <b>Seguir YouTube</b><span class="reward">+10k</span>
               </button>
-              <button class="task-card task-creator">
+              <button class="task-card task-creator" id="tLike1">
                 <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3.5" fill="url(#gYT)"/><path d="M10 9.2l6 2.8-6 2.8z" fill="#fff"/></svg>
-                <b>Like a video</b><span class="reward">+5k</span>
+                <b>Like video 1</b><span class="reward">+5k</span>
               </button>
-              <button class="task-card task-creator">
+              <button class="task-card task-creator" id="tVer30">
                 <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3.5" fill="url(#gYT)"/><path d="M10 9.2l6 2.8-6 2.8z" fill="#fff"/></svg>
                 <b>Ver 30s video</b><span class="reward">+5k</span>
               </button>
-              <button class="task-card task-creator">
+              <button class="task-card task-creator" id="tSpotify">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="url(#gSP)"/><path d="M7 10.2c3.2-1 6.8-.8 9.6 1M7.6 13c2.6-.8 5.4-.6 7.8.9M8.2 15.6c2-.6 4-.4 5.8.7" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>
-                <b>Seguir Spotify</b><span class="reward">+5k</span>
+                <b>Seguir Spotify</b><span class="reward">+10k</span>
+              </button>
+              <button class="task-card task-creator" id="tLike2">
+                <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3.5" fill="url(#gYT)"/><path d="M10 9.2l6 2.8-6 2.8z" fill="#fff"/></svg>
+                <b>Like video 2</b><span class="reward">+5k</span>
               </button>
             </div>
           </div>
           <div class="t-page" id="t3">
             <div class="invite-card">
               <div class="invite-code" id="inviteCode">TRIKI-0000</div>
-              <button class="copy-btn" id="copyBtn">Copiar código</button>
+              <button class="copy-btn" id="copyBtn">Copiar enlace</button>
               <div class="invite-count">Invitados: <b id="invCount">0</b> · +5k c/u</div>
               <div class="invite-table" id="inviteTable"></div>
             </div>
@@ -546,6 +549,7 @@
           <div class="connect-card">
             <div class="cc-t" id="ccTitle">Billeteras</div>
             <div class="cc-d" id="ccDesc">Conecta tu Telegram Wallet para recibir tus recompensas en USDT.</div>
+            <input id="walletInput" type="text" placeholder="UQ... (dirección TON)" style="width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;font-size:13px;font-family:inherit;outline:none">
             <button class="connect-btn" id="connectBtn">CONECTAR TELEGRAM WALLET</button>
           </div>
         </div>
@@ -567,7 +571,7 @@
       <button class="tab" data-page="p-billetera"><span class="caps"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="3"/><path d="M2 10h20"/><circle cx="17" cy="14" r="1.5"/></svg></span>Billetera</button>
     </nav>
 
-    <div class="banner-slot">ESPACIO RESERVADO PARA EL BANNER</div>
+    <div class="banner-slot" id="bannerSlot">ESPACIO RESERVADO PARA EL BANNER</div>
   </div>
 
 <script>
@@ -590,12 +594,16 @@
     });
   });
 </script>
+<script src="js/config.js"></script>
 <script src="js/sesion.js"></script>
 <script src="js/juego.js"></script>
 <script src="js/musica.js"></script>
 <script src="js/tareas.js"></script>
 <script src="js/top.js"></script>
 <script src="js/billetera.js"></script>
+<script src="js/anuncios.js"></script>
+<script src="js/invitacion.js"></script>
 <script type="module" src="js/firebase.js"></script>
+<script src='//libtl.com/sdk.js' data-zone='11992190' data-sdk='show_11992190' async></script>
 </body>
  </html>
