@@ -1,17 +1,17 @@
-/* ============ TRIKI - MOTOR DEL JUEGO v8 ============ */
+/* ============ TRIKI - JUEGO v9 (monedas reales + revivir sin demo negro) ============ */
 (function(){
   const canvas=document.getElementById('gameCanvas');
   const ctx=canvas.getContext('2d');
   const area=document.getElementById('gameArea');
   const navEl=document.querySelector('nav');
-  const gameBottom=document.querySelector('.game-bottom');
+  const S=()=>window.TrikiSaldo;
+  const A=()=>window.TrikiAnuncios;
 
   const COLS=15, ROWS=21;
   let cell=0, offX=0, offY=0;
 
   function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
   let rnd=mulberry32(20261015);
-
   let grid=[];
   const DOOR={r:1,c:COLS-2};
 
@@ -41,7 +41,7 @@
   const esCamino=(r,c)=> r>=0&&r<ROWS&&c>=0&&c<COLS&&grid[r][c]===0;
 
   let started=false, paused=false, gameOver=false;
-  let lives=5, coins=0, skill=5, invuln=0, usandoAnuncio=false;
+  let lives=5, coins=0, skill=5, invuln=0;
   let player, zombies, bullets, coinSet;
 
   const centro=(r,c)=>({ x:offX+c*cell+cell/2, y:offY+r*cell+cell/2 });
@@ -88,7 +88,7 @@
   }
   function updateSkill(){ const el=document.getElementById('skillCount'); if(el) el.textContent=skill; }
 
-  /* ===== D-PAD CUADRADO GRANDE, BOTONES SEPARADOS ===== */
+  // D-PAD CUADRADO
   const styleDpad=document.createElement('style');
   styleDpad.textContent=`
     .dpad{ position:relative; width:172px; height:172px; border-radius:30px;
@@ -115,67 +115,94 @@
     .dcenter{ position:absolute; left:50%; top:50%; width:40px; height:40px; margin:-20px 0 0 -20px;
       border-radius:12px; background:rgba(255,255,255,.08); }
   `;
-  document.head.appendChild(styleDpad);
+  if(!document.getElementById('dpadStyle')){ styleDpad.id='dpadStyle'; document.head.appendChild(styleDpad); }
 
   const joyZone=document.getElementById('joyZone');
-  const dpad=document.createElement('div');
-  dpad.className='dpad';
-  dpad.innerHTML=
-    '<button class="dbtn dup" data-dir="up">▲</button>'+
-    '<button class="dbtn dleft" data-dir="left">◀</button>'+
-    '<button class="dbtn dright" data-dir="right">▶</button>'+
-    '<button class="dbtn ddown" data-dir="down">▼</button>'+
-    '<div class="dcenter"></div>';
-  joyZone.replaceWith(dpad);
+  if(joyZone && !joyZone.querySelector('.dpad')){
+    joyZone.innerHTML='';
+    const dpad=document.createElement('div');
+    dpad.className='dpad';
+    dpad.innerHTML=
+      '<button class="dbtn dup" data-dir="up">▲</button>'+
+      '<button class="dbtn dleft" data-dir="left">◀</button>'+
+      '<button class="dbtn dright" data-dir="right">▶</button>'+
+      '<button class="dbtn ddown" data-dir="down">▼</button>'+
+      '<div class="dcenter"></div>';
+    joyZone.appendChild(dpad);
 
-  // separación extra del banner y botones laterales MÁS ARRIBA
-  gameBottom.style.paddingBottom='16px';
-  const pauseBtn=document.getElementById('pauseBtn');
-  const skillBtn=document.getElementById('skillBtn');
-  pauseBtn.style.alignSelf='flex-start';
-  skillBtn.style.alignSelf='flex-start';
-
-  let inputDir=null;
-  dpad.querySelectorAll('.dbtn').forEach(b=>{
-    const dir=b.dataset.dir;
-    const on=e=>{ inputDir=dir; e.preventDefault(); };
-    const off=()=>{ if(inputDir===dir) inputDir=null; };
-    b.addEventListener('pointerdown',on);
-    b.addEventListener('pointerup',off);
-    b.addEventListener('pointercancel',off);
-    b.addEventListener('pointerleave',off);
-  });
-  window.addEventListener('keydown',e=>{
-    const k=e.key;
-    if(k==='ArrowRight'||k==='d') inputDir='right';
-    if(k==='ArrowLeft'||k==='a') inputDir='left';
-    if(k==='ArrowDown'||k==='s') inputDir='down';
-    if(k==='ArrowUp'||k==='w') inputDir='up';
-  });
-  window.addEventListener('keyup',()=>{ inputDir=null; });
-
-  /* ===== ANUNCIO DEMO ===== */
-  function mostrarAnuncioDemo(callback){
-    if(usandoAnuncio) return;
-    usandoAnuncio=true;
-    const ov=document.createElement('div');
-    ov.className='game-overlay'; ov.style.position='fixed'; ov.style.zIndex=200;
-    ov.innerHTML='<div class="ov-title">ANUNCIO 30s</div><div class="ov-title" style="font-size:40px" id="adDemoCount">30</div>';
-    document.body.appendChild(ov);
-    let s=30;
-    const el=ov.querySelector('#adDemoCount');
-    const t=setInterval(()=>{
-      s--; el.textContent=s;
-      if(s<=0){ clearInterval(t); ov.remove(); usandoAnuncio=false; callback(); }
-    },1000);
+    let inputDir=null;
+    dpad.querySelectorAll('.dbtn').forEach(b=>{
+      const dir=b.dataset.dir;
+      const on=e=>{ inputDir=dir; e.preventDefault(); };
+      const off=()=>{ if(inputDir===dir) inputDir=null; };
+      b.addEventListener('pointerdown',on);
+      b.addEventListener('pointerup',off);
+      b.addEventListener('pointercancel',off);
+      b.addEventListener('pointerleave',off);
+    });
+    window.addEventListener('keydown',e=>{
+      const k=e.key;
+      if(k==='ArrowRight'||k==='d') inputDir='right';
+      if(k==='ArrowLeft'||k==='a') inputDir='left';
+      if(k==='ArrowDown'||k==='s') inputDir='down';
+      if(k==='ArrowUp'||k==='w') inputDir='up';
+    });
+    window.addEventListener('keyup',()=>{ inputDir=null; });
+    window._joyDir=()=>inputDir;
   }
 
+  /* ===== REVIVIR con AdsGram real (sin demo negro) ===== */
+  function pedirRevivir(cb){
+    if(A()) A().recompensado('adsgram', cb);
+    else cb(false);
+  }
+
+  /* ===== BOTONES ===== */
+  const overOverlay=document.getElementById('overOverlay');
+  const restartBtn=document.getElementById('restartBtn');
+  const livesAdBtn=document.getElementById('livesAdBtn');
+  restartBtn.style.display='';
+  restartBtn.textContent='↻ EMPEZAR DE NUEVO';
+  livesAdBtn.textContent='📺 REVIVIR';
+
+  document.getElementById('startBtn').addEventListener('click',()=>{
+    started=true; document.getElementById('startOverlay').hidden=true; setNav(false);
+  });
+  document.getElementById('pauseBtn').addEventListener('click',()=>{
+    if(!started||gameOver) return;
+    paused=!paused;
+    document.getElementById('pauseOverlay').hidden=!paused;
+    setNav(paused);
+  });
+  document.getElementById('resumeBtn').addEventListener('click',()=>{
+    paused=false; document.getElementById('pauseOverlay').hidden=true; setNav(false);
+  });
+  livesAdBtn.addEventListener('click',()=>{
+    pedirRevivir((ok)=>{
+      if(ok){
+        lives=3; skill=5; gameOver=false; invuln=1.5;
+        updateHud(); updateSkill();
+        overOverlay.hidden=true; started=true; setNav(false);
+      }
+    });
+  });
+  restartBtn.addEventListener('click',()=>{
+    reset();
+    overOverlay.hidden=true;
+    started=false;
+    document.getElementById('startOverlay').hidden=false;
+    setNav(true);
+  });
+
   /* ===== BOTÓN DISPARO ===== */
-  skillBtn.innerHTML=
-    '<span style="width:26px;height:26px;border-radius:50%;display:block;'+
-    'background:radial-gradient(circle at 35% 30%, #fff3b0, #ffd21f 40%, #ff7a00 75%, #e8332a 100%);'+
-    'box-shadow:0 0 12px rgba(255,120,0,.85), inset 0 -3px 6px rgba(0,0,0,.35), inset 0 2px 3px rgba(255,255,255,.55);"></span>'+
-    '<span class="cnt" id="skillCount">5</span>';
+  const skillBtn=document.getElementById('skillBtn');
+  if(skillBtn && !skillBtn.querySelector('span')){
+    skillBtn.innerHTML=
+      '<span style="width:26px;height:26px;border-radius:50%;display:block;'+
+      'background:radial-gradient(circle at 35% 30%, #fff3b0, #ffd21f 40%, #ff7a00 75%, #e8332a 100%);'+
+      'box-shadow:0 0 12px rgba(255,120,0,.85), inset 0 -3px 6px rgba(0,0,0,.35), inset 0 2px 3px rgba(255,255,255,.55);"></span>'+
+      '<span class="cnt" id="skillCount">5</span>';
+  }
 
   function disparar(){
     if(!started||paused||gameOver) return;
@@ -191,41 +218,6 @@
   canvas.addEventListener('pointerdown',()=>{ disparar(); });
   skillBtn.addEventListener('click',()=>{ disparar(); });
 
-  /* ===== GAME OVER SIMPLE (solo 2 opciones cortas) ===== */
-  const overOverlay=document.getElementById('overOverlay');
-  const restartBtn=document.getElementById('restartBtn');
-  const livesAdBtn=document.getElementById('livesAdBtn');
-  restartBtn.style.display='';
-  restartBtn.textContent='↻ EMPEZAR DE NUEVO';
-  livesAdBtn.textContent='📺 REVIVIR';
-
-  document.getElementById('startBtn').addEventListener('click',()=>{
-    started=true; document.getElementById('startOverlay').hidden=true; setNav(false);
-  });
-  pauseBtn.addEventListener('click',()=>{
-    if(!started||gameOver) return;
-    paused=!paused;
-    document.getElementById('pauseOverlay').hidden=!paused;
-    setNav(paused);
-  });
-  document.getElementById('resumeBtn').addEventListener('click',()=>{
-    paused=false; document.getElementById('pauseOverlay').hidden=true; setNav(false);
-  });
-  livesAdBtn.addEventListener('click',()=>{
-    mostrarAnuncioDemo(()=>{
-      lives=3; skill=5; gameOver=false; invuln=1.5;
-      updateHud(); updateSkill();
-      overOverlay.hidden=true; started=true; setNav(false);
-    });
-  });
-  restartBtn.addEventListener('click',()=>{
-    reset();
-    overOverlay.hidden=true;
-    started=false;
-    document.getElementById('startOverlay').hidden=false;
-    setNav(true);
-  });
-
   /* ===== MOVIMIENTO ===== */
   function puedeMoverGrid(gx,gy){
     const r=0.32;
@@ -237,6 +229,7 @@
     return true;
   }
   function moverJugador(dt){
+    const inputDir=window._joyDir?window._joyDir():null;
     if(!inputDir) return;
     const vel=6.5*dt;
     if(inputDir==='left'||inputDir==='right'){
@@ -305,6 +298,8 @@
     const key=pc.r+','+pc.c;
     if(coinSet.has(key)){
       coinSet.delete(key); coins++; updateHud();
+      // >>> Monedas TC van al saldo REAL del cerebro <<<
+      if(S()) S().sumar(1);
       const [rr,cc]=key.split(',').map(Number);
       setTimeout(()=>{ if(esCamino(rr,cc)) coinSet.add(key); },10000);
     }
@@ -355,7 +350,6 @@
     ctx.fillStyle='#177a2c'; ctx.fillRect(offX,offY,cell*COLS,cell*ROWS);
     ctx.fillStyle='rgba(255,255,255,.04)';
     for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){ if((r+c)%2===0) ctx.fillRect(offX+c*cell,offY+r*cell,cell,cell); }
-
     for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
       if(grid[r][c]===1){
         const x=offX+c*cell, y=offY+r*cell;
@@ -365,12 +359,10 @@
         ctx.fillStyle='rgba(0,0,0,.25)'; ctx.fillRect(x+1,y+cell-4,cell-2,3);
       }
     }
-
     { const p=centro(DOOR.r,DOOR.c);
       ctx.fillStyle='#8f130c'; ctx.fillRect(p.x-cell*0.4,p.y-cell*0.45,cell*0.8,cell*0.9);
       ctx.fillStyle='#e8332a'; ctx.fillRect(p.x-cell*0.3,p.y-cell*0.35,cell*0.6,cell*0.7);
       ctx.fillStyle='#ffd21f'; ctx.beginPath(); ctx.arc(p.x+cell*0.15,p.y,cell*0.06,0,7); ctx.fill(); }
-
     ctx.textAlign='center'; ctx.textBaseline='middle';
     coinSet.forEach(k=>{
       const [r,c]=k.split(',').map(Number);
@@ -382,7 +374,6 @@
       ctx.font='900 '+Math.max(6,cell*0.16)+'px Inter, sans-serif';
       ctx.fillText('TC',p.x,p.y+1);
     });
-
     bullets.forEach(b=>{
       ctx.fillStyle='rgba(255,120,0,.4)';
       ctx.beginPath(); ctx.arc(b.x-b.dx*7,b.y-b.dy*7,cell*0.22,0,7); ctx.fill();
@@ -391,7 +382,6 @@
       ctx.fillStyle='#ffd21f';
       ctx.beginPath(); ctx.arc(b.x,b.y,cell*0.09,0,7); ctx.fill();
     });
-
     zombies.forEach(z=>{
       if(!z.alive) return;
       ctx.fillStyle=z.color;
@@ -411,7 +401,6 @@
       ctx.fillRect(z.px-cell*0.14,z.py+cell*0.14,cell*0.08,cell*0.08);
       ctx.fillRect(z.px+cell*0.04,z.py+cell*0.14,cell*0.08,cell*0.08);
     });
-
     { const px=jpx(), py=jpy();
       if(invuln>0 && Math.floor(invuln*10)%2===0) ctx.globalAlpha=0.5;
       ctx.fillStyle='#e8332a';
